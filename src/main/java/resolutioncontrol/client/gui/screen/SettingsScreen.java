@@ -12,12 +12,13 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import resolutioncontrol.ResolutionControlMod;
+import resolutioncontrol.util.Config;
 
 
 public final class SettingsScreen extends Screen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
-	private static final double[] scaleValues = {0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0};
+	private static final double[] scaleValues = {0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
 	
 	private static Text text(String path, Object... args) {
 		return new TranslatableText("screen." + ResolutionControlMod.MOD_ID + ".settings." + path, args);
@@ -33,6 +34,10 @@ public final class SettingsScreen extends Screen {
 	
 	private ButtonWidget increaseButton;
 	private ButtonWidget decreaseButton;
+
+	private ButtonWidget upscaleAlgoButton;
+	private ButtonWidget downscaleAlgoButton;
+
 	private ButtonWidget doneButton;
 	
 	private int centerX;
@@ -64,23 +69,45 @@ public final class SettingsScreen extends Screen {
 		int buttonY = centerY + 5 - buttonSize / 2;
 		
 		decreaseButton = new ButtonWidget(
-			centerX - buttonOffset - buttonSize / 2, buttonY,
+			centerX - 65 - buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 			new LiteralText("-"),
 			button -> changeScaleFactor(false));
 		addButton(decreaseButton);
 		
 		increaseButton = new ButtonWidget(
-			centerX + buttonOffset - buttonSize / 2, buttonY,
+			centerX - 65 + buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 				new LiteralText("+"),
 			button -> changeScaleFactor(true)
 		);
 		addButton(increaseButton);
+
+		upscaleAlgoButton = new ButtonWidget(
+			centerX + 5, centerY - 28,
+			60, buttonSize,
+			Config.getUpscaleAlgorithm().getText(),
+			button -> {
+				ResolutionControlMod.getInstance().nextUpscaleAlgorithm();
+				button.setMessage(Config.getUpscaleAlgorithm().getText());
+			}
+		);
+		addButton(upscaleAlgoButton);
+
+		downscaleAlgoButton = new ButtonWidget(
+				centerX + 5, centerY + 8,
+				60, buttonSize,
+				Config.getDownscaleAlgorithm().getText(),
+				button -> {
+					ResolutionControlMod.getInstance().nextDownscaleAlgorithm();
+					button.setMessage(Config.getDownscaleAlgorithm().getText());
+				}
+		);
+		addButton(downscaleAlgoButton);
 		
 		doneButton = new ButtonWidget(
-			centerX - 100 / 2, startY + containerHeight - 10 - 20,
-			100, buttonSize,
+			centerX - 80, startY + containerHeight - 30,
+			60, buttonSize,
 			new TranslatableText("gui.done"),
 			button -> client.openScreen(parent)
 		);
@@ -88,7 +115,18 @@ public final class SettingsScreen extends Screen {
 		
 		updateButtons();
 	}
-	
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (ResolutionControlMod.getInstance().getSettingsKeyBinding().matchesKey(keyCode, scanCode)) {
+			this.client.openScreen(null);
+			this.client.mouse.lockCursor();
+			return true;
+		} else {
+			return super.keyPressed(keyCode, scanCode, modifiers);
+		}
+	}
+
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float time) {
 		assert client != null;
@@ -112,15 +150,26 @@ public final class SettingsScreen extends Screen {
 		
 		drawCenteredString(matrices, getTitle().getString(), centerX, startY + 10, 0x404040);
 		
-		Text scaleFactor = text("current", mod.getScaleFactor());
-		drawCenteredString(matrices, scaleFactor.getString(), centerX, centerY - 20,
-				mod.getScaleFactor() > 2.0 ? 0xFF5555 : 0x000000);
+		String scaleFactor = String.format("\u00a7%s%s\u00a7rx",
+				mod.getScaleFactor() > 2.0 ? "4" : "0", mod.getScaleFactor());
+		drawCenteredString(matrices, scaleFactor, centerX - 65, centerY - 34, 0x000000);
+
+		drawLeftAlignedString(matrices, "Upscale:", centerX + 5, centerY - 40, 0x000000);
+		drawLeftAlignedString(matrices, "Downscale:", centerX + 5, centerY - 5, 0x000000);
 		
 		super.render(matrices, mouseX, mouseY, time); // buttons
 	}
 	
 	private void drawCenteredString(MatrixStack matrices, String text, int x, int y, int color) {
 		textRenderer.draw(matrices, text, x - textRenderer.getWidth(text) / 2, y, color);
+	}
+
+	private void drawLeftAlignedString(MatrixStack matrices, String text, int x, int y, int color) {
+		textRenderer.draw(matrices, text, x, y, color);
+	}
+
+	private void drawRightAlignedString(MatrixStack matrices, String text, int x, int y, int color) {
+		textRenderer.draw(matrices, text, x - textRenderer.getWidth(text), y, color);
 	}
 	
 	private void changeScaleFactor(boolean add) {

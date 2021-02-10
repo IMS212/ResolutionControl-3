@@ -1,11 +1,14 @@
 package resolutioncontrol;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
@@ -29,12 +32,7 @@ public class ResolutionControlMod implements ModInitializer {
 		return instance;
 	}
 	
-	private static FabricKeyBinding settingsKeyBinding = FabricKeyBinding.Builder.create(
-		identifier("settings"),
-		InputUtil.Type.KEYSYM,
-		GLFW.GLFW_KEY_O,
-		"key.categories.misc"
-	).build();
+	private static KeyBinding settingsKeyBinding;
 	
 	private boolean shouldScale = false;
 	
@@ -51,11 +49,14 @@ public class ResolutionControlMod implements ModInitializer {
 		// Proceed with mild caution.
 		instance = this;
 		
-		KeyBindingRegistry.INSTANCE.register(settingsKeyBinding);
-		
-		ClientTickCallback.EVENT.register(new KeyBindingHandler(settingsKeyBinding) {
-			@Override
-			public void handlePress() {
+		settingsKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.resolutioncontrol.settings",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_O,
+				"key.categories.misc"));
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (settingsKeyBinding.wasPressed()) {
 				client.openScreen(new SettingsScreen());
 			}
 		});
@@ -113,9 +114,59 @@ public class ResolutionControlMod implements ModInitializer {
 		
 		ConfigHandler.instance.saveConfig();
 	}
+
+	public ScalingAlgorithm getUpscaleAlgorithm() {
+		return Config.getUpscaleAlgorithm();
+	}
+
+	public void setUpscaleAlgorithm(ScalingAlgorithm algorithm) {
+		if (algorithm == Config.getUpscaleAlgorithm()) return;
+
+		Config.getInstance().upscaleAlgorithm = algorithm;
+
+		updateFramebufferSize();
+
+		ConfigHandler.instance.saveConfig();
+	}
+
+	public void nextUpscaleAlgorithm() {
+		ScalingAlgorithm currentAlgorithm = getUpscaleAlgorithm();
+		if (currentAlgorithm.equals(ScalingAlgorithm.NEAREST)) {
+			setUpscaleAlgorithm(ScalingAlgorithm.LINEAR);
+		} else {
+			setUpscaleAlgorithm(ScalingAlgorithm.NEAREST);
+		}
+	}
+
+	public ScalingAlgorithm getDownscaleAlgorithm() {
+		return Config.getDownscaleAlgorithm();
+	}
+
+	public void setDownscaleAlgorithm(ScalingAlgorithm algorithm) {
+		if (algorithm == Config.getDownscaleAlgorithm()) return;
+
+		Config.getInstance().downscaleAlgorithm = algorithm;
+
+		updateFramebufferSize();
+
+		ConfigHandler.instance.saveConfig();
+	}
+
+	public void nextDownscaleAlgorithm() {
+		ScalingAlgorithm currentAlgorithm = getDownscaleAlgorithm();
+		if (currentAlgorithm.equals(ScalingAlgorithm.NEAREST)) {
+			setDownscaleAlgorithm(ScalingAlgorithm.LINEAR);
+		} else {
+			setDownscaleAlgorithm(ScalingAlgorithm.NEAREST);
+		}
+	}
 	
 	public double getCurrentScaleFactor() {
 		return shouldScale ? Config.getScaleFactor() : 1;
+	}
+
+	public ScalingAlgorithm getCurrentScalingAlgorithm() {
+		return Config.getScaleFactor() > 1.0 ? Config.getUpscaleAlgorithm() : Config.getDownscaleAlgorithm();
 	}
 	
 	public void onResolutionChanged() {
@@ -151,7 +202,11 @@ public class ResolutionControlMod implements ModInitializer {
 	private void setClientFramebuffer(Framebuffer framebuffer) {
 		((MutableMinecraftClient) client).setFramebuffer(framebuffer);
 	}
-	
+
+	public KeyBinding getSettingsKeyBinding() {
+		return settingsKeyBinding;
+	}
+
 	public interface MutableMinecraftClient {
 		void setFramebuffer(Framebuffer framebuffer);
 	}

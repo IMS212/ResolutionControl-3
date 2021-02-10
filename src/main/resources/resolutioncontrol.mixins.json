@@ -3,13 +3,14 @@
   "package": "resolutioncontrol.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "FramebufferMixin"
+
   ],
   "client": [
     "GameRendererMixin",
     "MinecraftClientMixin",
     "WindowMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "FramebufferMixin"
   ],
   "injectors": {
     "defaultRequire": 1
