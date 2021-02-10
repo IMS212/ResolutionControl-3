@@ -3,6 +3,7 @@ package resolutioncontrol.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gl.Framebuffer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,12 +15,12 @@ public abstract class FramebufferMixin {
     @Redirect(method = "initFbo", at = @At(value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;texParameter(III)V"))
     private void onInitFbo(int target, int pname, int param) {
-        if (target == GL11.GL_TEXTURE_2D && pname == GL11.GL_TEXTURE_MIN_FILTER) {
-            GlStateManager.texParameter(target, pname,
-                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
-        } else if (target == GL11.GL_TEXTURE_2D && pname == GL11.GL_TEXTURE_MAG_FILTER) {
+        if (pname == GL11.GL_TEXTURE_MIN_FILTER) {
             GlStateManager.texParameter(target, pname,
                     ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId());
+        } else if (pname == GL11.GL_TEXTURE_MAG_FILTER) {
+            GlStateManager.texParameter(target, pname,
+                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
         } else {
             GlStateManager.texParameter(target, pname, param);
         }
@@ -34,12 +35,14 @@ public abstract class FramebufferMixin {
     @Redirect(method = "setTexFilter", at = @At(value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;texParameter(III)V"))
     private void onSetTexFilter(int target, int pname, int param) {
-        if (target == GL11.GL_TEXTURE_2D && pname == GL11.GL_TEXTURE_MIN_FILTER) {
-            GlStateManager.texParameter(target, pname,
-                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
-        } else if (target == GL11.GL_TEXTURE_2D && pname == GL11.GL_TEXTURE_MAG_FILTER) {
+        if (pname == GL11.GL_TEXTURE_MIN_FILTER) {
             GlStateManager.texParameter(target, pname,
                     ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId());
+        } else if (pname == GL11.GL_TEXTURE_MAG_FILTER) {
+            GlStateManager.texParameter(target, pname,
+                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
+        } else if (pname == GL11.GL_TEXTURE_WRAP_S || pname == GL11.GL_TEXTURE_WRAP_T) {
+            GlStateManager.texParameter(target, pname, GL12.GL_CLAMP_TO_EDGE);
         } else {
             GlStateManager.texParameter(target, pname, param);
         }

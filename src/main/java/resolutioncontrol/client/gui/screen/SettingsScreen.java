@@ -18,7 +18,7 @@ import resolutioncontrol.util.Config;
 public final class SettingsScreen extends Screen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
-	private static final double[] scaleValues = {0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
+	private static final double[] scaleValues = {0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
 	
 	private static Text text(String path, Object... args) {
 		return new TranslatableText("screen." + ResolutionControlMod.MOD_ID + ".settings." + path, args);
@@ -177,8 +177,8 @@ public final class SettingsScreen extends Screen {
 		int nextIndex = ArrayUtils.indexOf(scaleValues, currentScale);
 		if (nextIndex == -1) {
 			for (int i = -1; i <= scaleValues.length; ++i) {
-				double scale1 = i == -1 ? 0.0 : scaleValues[i - 1];
-				double scale2 = i == scaleValues.length ? Double.POSITIVE_INFINITY : scaleValues[i];
+				double scale1 = i == -1 ? 0.0 : scaleValues[i];
+				double scale2 = i == scaleValues.length ? Double.POSITIVE_INFINITY : scaleValues[i + 1];
 
 				if (currentScale > scale1 && currentScale < scale2) {
 					nextIndex = i + (add ? 1 : 0);
