@@ -100,11 +100,11 @@ public class ResolutionControlMod implements ModInitializer {
 		client.getProfiler().swap("level");
 	}
 	
-	public int getScaleFactor() {
+	public double getScaleFactor() {
 		return Config.getScaleFactor();
 	}
 	
-	public void setScaleFactor(int scaleFactor) {
+	public void setScaleFactor(double scaleFactor) {
 		if (scaleFactor == Config.getScaleFactor()) return;
 		
 		Config.getInstance().scaleFactor = scaleFactor;
@@ -114,7 +114,7 @@ public class ResolutionControlMod implements ModInitializer {
 		ConfigHandler.instance.saveConfig();
 	}
 	
-	public int getCurrentScaleFactor() {
+	public double getCurrentScaleFactor() {
 		return shouldScale ? Config.getScaleFactor() : 1;
 	}
 	

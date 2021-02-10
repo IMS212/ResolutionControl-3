@@ -5,9 +5,9 @@ public final class Config {
 		return ConfigHandler.instance.getConfig();
 	}
 	
-	public static int getScaleFactor() {
+	public static double getScaleFactor() {
 		return getInstance().scaleFactor;
 	}
 	
-	public int scaleFactor = 1;
+	public double scaleFactor = 1;
 }

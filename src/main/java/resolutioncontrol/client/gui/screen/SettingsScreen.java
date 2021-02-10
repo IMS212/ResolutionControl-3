@@ -4,18 +4,20 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import resolutioncontrol.ResolutionControlMod;
 
 
 public final class SettingsScreen extends Screen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
+
+	private static final double[] scaleValues = {0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0};
 	
 	private static Text text(String path, Object... args) {
 		return new TranslatableText("screen." + ResolutionControlMod.MOD_ID + ".settings." + path, args);
@@ -65,14 +67,14 @@ public final class SettingsScreen extends Screen {
 			centerX - buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 			new LiteralText("-"),
-			button -> changeScaleFactor(-1));
+			button -> changeScaleFactor(false));
 		addButton(decreaseButton);
 		
 		increaseButton = new ButtonWidget(
 			centerX + buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 				new LiteralText("+"),
-			button -> changeScaleFactor(+1)
+			button -> changeScaleFactor(true)
 		);
 		addButton(increaseButton);
 		
@@ -111,7 +113,8 @@ public final class SettingsScreen extends Screen {
 		drawCenteredString(matrices, getTitle().getString(), centerX, startY + 10, 0x404040);
 		
 		Text scaleFactor = text("current", mod.getScaleFactor());
-		drawCenteredString(matrices, scaleFactor.getString(), centerX, centerY - 20, 0x000000);
+		drawCenteredString(matrices, scaleFactor.getString(), centerX, centerY - 20,
+				mod.getScaleFactor() > 2.0 ? 0xFF5555 : 0x000000);
 		
 		super.render(matrices, mouseX, mouseY, time); // buttons
 	}
@@ -120,18 +123,30 @@ public final class SettingsScreen extends Screen {
 		textRenderer.draw(matrices, text, x - textRenderer.getWidth(text) / 2, y, color);
 	}
 	
-	private void changeScaleFactor(int change) {
-		int scaleFactor = mod.getScaleFactor() + change;
-		
-		if (scaleFactor < 1) {
-			scaleFactor = 1;
+	private void changeScaleFactor(boolean add) {
+		double currentScale = mod.getScaleFactor();
+		int nextIndex = ArrayUtils.indexOf(scaleValues, currentScale);
+		if (nextIndex == -1) {
+			for (int i = -1; i <= scaleValues.length; ++i) {
+				double scale1 = i == -1 ? 0.0 : scaleValues[i - 1];
+				double scale2 = i == scaleValues.length ? Double.POSITIVE_INFINITY : scaleValues[i];
+
+				if (currentScale > scale1 && currentScale < scale2) {
+					nextIndex = i + (add ? 1 : 0);
+					break;
+				}
+			}
+		} else {
+			nextIndex += add ? 1 : -1;
 		}
-		mod.setScaleFactor(scaleFactor);
-		
+
+		mod.setScaleFactor(scaleValues[nextIndex]);
+
 		updateButtons();
 	}
 	
 	private void updateButtons() {
-		decreaseButton.active = mod.getScaleFactor() > 1;
+		increaseButton.active = mod.getScaleFactor() < scaleValues[scaleValues.length - 1];
+		decreaseButton.active = mod.getScaleFactor() > scaleValues[0];
 	}
 }

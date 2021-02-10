@@ -21,7 +21,7 @@ public abstract class WindowMixin {
 	}
 	
 	private int scale(int value) {
-		int scaleFactor = ResolutionControlMod.getInstance().getCurrentScaleFactor();
+		double scaleFactor = ResolutionControlMod.getInstance().getCurrentScaleFactor();
 		return (int) Math.ceil(1d * value * scaleFactor);
 	}
 	
