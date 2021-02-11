@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "resolutioncontrol.mixin",
+  "package": "io.github.ultimateboomer.resolutioncontrol.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 

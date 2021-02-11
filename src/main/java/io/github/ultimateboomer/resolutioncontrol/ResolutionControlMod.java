@@ -1,11 +1,8 @@
-package resolutioncontrol;
+package io.github.ultimateboomer.resolutioncontrol;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.options.KeyBinding;
@@ -14,8 +11,8 @@ import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import resolutioncontrol.client.gui.screen.SettingsScreen;
-import resolutioncontrol.util.*;
+import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
+import io.github.ultimateboomer.resolutioncontrol.util.*;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";

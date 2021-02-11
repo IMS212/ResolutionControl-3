@@ -1,4 +1,4 @@
-package resolutioncontrol.util;
+package io.github.ultimateboomer.resolutioncontrol.util;
 
 public final class Config {
 	public double scaleFactor = 1;

@@ -1,10 +1,8 @@
-package resolutioncontrol.util;
+package io.github.ultimateboomer.resolutioncontrol.util;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.lwjgl.opengl.GL11;
-
-import java.util.Scanner;
 
 public enum ScalingAlgorithm {
     NEAREST(new LiteralText("Nearest"), GL11.GL_NEAREST),

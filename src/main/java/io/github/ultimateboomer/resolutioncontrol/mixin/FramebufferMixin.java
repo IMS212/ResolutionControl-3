@@ -1,14 +1,13 @@
-package resolutioncontrol.mixin;
+package io.github.ultimateboomer.resolutioncontrol.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gl.Framebuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import resolutioncontrol.ResolutionControlMod;
+import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 @Mixin(Framebuffer.class)
 public abstract class FramebufferMixin {

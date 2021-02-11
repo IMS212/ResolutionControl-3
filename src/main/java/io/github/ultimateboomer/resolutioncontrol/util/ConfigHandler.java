@@ -1,9 +1,9 @@
-package resolutioncontrol.util;
+package io.github.ultimateboomer.resolutioncontrol.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
-import resolutioncontrol.ResolutionControlMod;
+import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 import java.io.*;
 

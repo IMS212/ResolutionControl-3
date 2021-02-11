@@ -1,4 +1,4 @@
-package resolutioncontrol.client.gui.screen;
+package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.MinecraftClient;
@@ -11,14 +11,15 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
-import resolutioncontrol.ResolutionControlMod;
-import resolutioncontrol.util.Config;
+import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import io.github.ultimateboomer.resolutioncontrol.util.Config;
 
 
 public final class SettingsScreen extends Screen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
-	private static final double[] scaleValues = {0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
+	private static final double[] scaleValues = {0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0,
+			1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
 	
 	private static Text text(String path, Object... args) {
 		return new TranslatableText("screen." + ResolutionControlMod.MOD_ID + ".settings." + path, args);
