@@ -18,13 +18,13 @@ import io.github.ultimateboomer.resolutioncontrol.util.Config;
 public final class SettingsScreen extends Screen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
-	private static final double[] scaleValues = {0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0,
-			1.25, 1.5, 1.75, 2.0, 4.0, 8.0};
+	private static final double[] scaleValues = {0.0, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0,
+			1.25, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0};
 	
 	private static Text text(String path, Object... args) {
 		return new TranslatableText("screen." + ResolutionControlMod.MOD_ID + ".settings." + path, args);
 	}
-	
+
 	private final int containerWidth = 192;
 	private final int containerHeight = 128;
 	
@@ -70,14 +70,14 @@ public final class SettingsScreen extends Screen {
 		int buttonY = centerY + 5 - buttonSize / 2;
 		
 		decreaseButton = new ButtonWidget(
-			centerX - 65 - buttonOffset - buttonSize / 2, buttonY,
+			centerX - 55 - buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 			new LiteralText("-"),
 			button -> changeScaleFactor(false));
 		addButton(decreaseButton);
 		
 		increaseButton = new ButtonWidget(
-			centerX - 65 + buttonOffset - buttonSize / 2, buttonY,
+			centerX - 55 + buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
 				new LiteralText("+"),
 			button -> changeScaleFactor(true)
@@ -152,8 +152,14 @@ public final class SettingsScreen extends Screen {
 		drawCenteredString(matrices, getTitle().getString(), centerX, startY + 10, 0x404040);
 		
 		String scaleFactor = String.format("\u00a7%s%s\u00a7rx",
-				mod.getScaleFactor() > 2.0 ? "4" : "0", mod.getScaleFactor());
-		drawCenteredString(matrices, scaleFactor, centerX - 65, centerY - 34, 0x000000);
+				mod.getScaleFactor() >= 4.0 ? "4" : "0", mod.getScaleFactor());
+		drawCenteredString(matrices, scaleFactor,
+				centerX - 55, centerY - 34, 0x000000);
+
+		drawCenteredString(matrices, String.format("\u00a78%sx%s\u00a7r",
+				ResolutionControlMod.getInstance().getCurrentWidth(),
+				ResolutionControlMod.getInstance().getCurrentHeight()),
+				centerX - 55, centerY - 20, 0x000000);
 
 		drawLeftAlignedString(matrices, "Upscale:", centerX + 5, centerY - 40, 0x000000);
 		drawLeftAlignedString(matrices, "Downscale:", centerX + 5, centerY - 5, 0x000000);

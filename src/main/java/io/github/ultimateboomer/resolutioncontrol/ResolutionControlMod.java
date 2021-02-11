@@ -38,6 +38,9 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
+
+	private int currentWidth = 0;
+	private int currentHeight = 0;
 	
 	@Override
 	public void onInitialize() {
@@ -80,15 +83,14 @@ public class ResolutionControlMod implements ModInitializer {
 		client.getProfiler().swap(shouldScale ? "startScaling" : "finishScaling");
 		
 		// swap out framebuffers as needed
-		boolean shouldUpdateViewport = true;
 		if (shouldScale) {
 			clientFramebuffer = client.getFramebuffer();
 			setClientFramebuffer(framebuffer);
-			framebuffer.beginWrite(shouldUpdateViewport);
+			framebuffer.beginWrite(true);
 			// nothing on the client's framebuffer yet
 		} else {
 			setClientFramebuffer(clientFramebuffer);
-			client.getFramebuffer().beginWrite(shouldUpdateViewport);
+			client.getFramebuffer().beginWrite(true);
 			framebuffer.draw(
 				window.getFramebufferWidth(),
 				window.getFramebufferHeight()
@@ -190,6 +192,9 @@ public class ResolutionControlMod implements ModInitializer {
 			MinecraftClient.IS_SYSTEM_MAC
 		);
 		shouldScale = prev;
+
+		setCurrentWidth(framebuffer.textureWidth);
+		setCurrentHeight(framebuffer.textureHeight);
 	}
 	
 	private Window getWindow() {
@@ -202,6 +207,22 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public KeyBinding getSettingsKeyBinding() {
 		return settingsKeyBinding;
+	}
+
+	public int getCurrentWidth() {
+		return currentWidth;
+	}
+
+	public int getCurrentHeight() {
+		return currentHeight;
+	}
+
+	public void setCurrentWidth(int currentWidth) {
+		this.currentWidth = currentWidth;
+	}
+
+	public void setCurrentHeight(int currentHeight) {
+		this.currentHeight = currentHeight;
 	}
 
 	public interface MutableMinecraftClient {

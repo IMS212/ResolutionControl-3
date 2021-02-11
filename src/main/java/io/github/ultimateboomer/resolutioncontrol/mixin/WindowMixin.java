@@ -1,6 +1,7 @@
 package io.github.ultimateboomer.resolutioncontrol.mixin;
 
 import net.minecraft.client.util.Window;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,12 +23,12 @@ public abstract class WindowMixin {
 	
 	private int scale(int value) {
 		double scaleFactor = ResolutionControlMod.getInstance().getCurrentScaleFactor();
-		return (int) Math.ceil(1d * value * scaleFactor);
+		return Math.max(MathHelper.ceil((double) value * scaleFactor), 1);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "getScaleFactor", cancellable = true)
 	private void getScaleFactor(CallbackInfoReturnable<Double> callbackInfo) {
-		callbackInfo.setReturnValue(callbackInfo.getReturnValueD() / ResolutionControlMod.getInstance().getCurrentScaleFactor());
+		callbackInfo.setReturnValue(callbackInfo.getReturnValueD() * ResolutionControlMod.getInstance().getCurrentScaleFactor());
 	}
 	
 	@Inject(at = @At("RETURN"), method = "onFramebufferSizeChanged")
