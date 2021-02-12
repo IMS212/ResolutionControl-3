@@ -1,5 +1,9 @@
 package io.github.ultimateboomer.resolutioncontrol;
 
+import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
+import io.github.ultimateboomer.resolutioncontrol.util.Config;
+import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
+import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -7,12 +11,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
-import io.github.ultimateboomer.resolutioncontrol.util.*;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
@@ -21,15 +24,18 @@ public class ResolutionControlMod implements ModInitializer {
 		return new Identifier(MOD_ID, path);
 	}
 	
-	private static MinecraftClient client = MinecraftClient.getInstance();
+	private static final MinecraftClient client = MinecraftClient.getInstance();
 	
 	private static ResolutionControlMod instance;
 	
 	public static ResolutionControlMod getInstance() {
 		return instance;
 	}
+
+	private static final String SCREENSHOT_PREFIX = "fb";
 	
-	private static KeyBinding settingsKeyBinding;
+	private KeyBinding settingsKey;
+	private KeyBinding screenshotKey;
 	
 	private boolean shouldScale = false;
 	
@@ -39,8 +45,10 @@ public class ResolutionControlMod implements ModInitializer {
 	@Nullable
 	private Framebuffer clientFramebuffer;
 
-	private int currentWidth = 0;
-	private int currentHeight = 0;
+	private int currentWidth;
+	private int currentHeight;
+
+	private long estimatedMemory;
 	
 	@Override
 	public void onInitialize() {
@@ -49,15 +57,28 @@ public class ResolutionControlMod implements ModInitializer {
 		// Proceed with mild caution.
 		instance = this;
 		
-		settingsKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+		settingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.resolutioncontrol.settings",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_O,
-				"key.categories.misc"));
+				"key.categories.resolutioncontrol"));
+
+		screenshotKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+				"key.resolutioncontrol.screenshot",
+				InputUtil.Type.KEYSYM,
+				-1,
+				"key.categories.resolutioncontrol"));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (settingsKeyBinding.wasPressed()) {
+			while (settingsKey.wasPressed()) {
 				client.openScreen(new SettingsScreen());
+			}
+
+			while (screenshotKey.wasPressed()) {
+				ScreenshotUtils.saveScreenshot(client.runDirectory,
+						SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
+						framebuffer.textureWidth, framebuffer.textureHeight, framebuffer,
+						text -> client.player.sendMessage(text, false));
 			}
 		});
 	}
@@ -193,8 +214,11 @@ public class ResolutionControlMod implements ModInitializer {
 		);
 		shouldScale = prev;
 
-		setCurrentWidth(framebuffer.textureWidth);
-		setCurrentHeight(framebuffer.textureHeight);
+		currentWidth = framebuffer.textureWidth;
+		currentHeight = framebuffer.textureHeight;
+
+		// Framebuffer uses color (4 x 8 = 32 bit int) and depth (32 bit float)
+		estimatedMemory = (long) currentWidth * currentHeight * 8;
 	}
 	
 	private Window getWindow() {
@@ -205,8 +229,8 @@ public class ResolutionControlMod implements ModInitializer {
 		((MutableMinecraftClient) client).setFramebuffer(framebuffer);
 	}
 
-	public KeyBinding getSettingsKeyBinding() {
-		return settingsKeyBinding;
+	public KeyBinding getSettingsKey() {
+		return settingsKey;
 	}
 
 	public int getCurrentWidth() {
@@ -217,12 +241,8 @@ public class ResolutionControlMod implements ModInitializer {
 		return currentHeight;
 	}
 
-	public void setCurrentWidth(int currentWidth) {
-		this.currentWidth = currentWidth;
-	}
-
-	public void setCurrentHeight(int currentHeight) {
-		this.currentHeight = currentHeight;
+	public long getEstimatedMemory() {
+		return estimatedMemory;
 	}
 
 	public interface MutableMinecraftClient {

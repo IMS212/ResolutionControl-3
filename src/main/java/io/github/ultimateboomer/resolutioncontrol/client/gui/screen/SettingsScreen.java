@@ -1,6 +1,9 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import io.github.ultimateboomer.resolutioncontrol.util.Config;
+import io.github.ultimateboomer.resolutioncontrol.util.MetricFormatter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -11,8 +14,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
-import io.github.ultimateboomer.resolutioncontrol.util.Config;
 
 
 public final class SettingsScreen extends Screen {
@@ -67,7 +68,7 @@ public final class SettingsScreen extends Screen {
 		
 		int buttonSize = 20;
 		int buttonOffset = buttonSize / 2;
-		int buttonY = centerY + 5 - buttonSize / 2;
+		int buttonY = centerY + 15 - buttonSize / 2;
 		
 		decreaseButton = new ButtonWidget(
 			centerX - 55 - buttonOffset - buttonSize / 2, buttonY,
@@ -119,7 +120,7 @@ public final class SettingsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (ResolutionControlMod.getInstance().getSettingsKeyBinding().matchesKey(keyCode, scanCode)) {
+		if (ResolutionControlMod.getInstance().getSettingsKey().matchesKey(keyCode, scanCode)) {
 			this.client.openScreen(null);
 			this.client.mouse.lockCursor();
 			return true;
@@ -150,16 +151,19 @@ public final class SettingsScreen extends Screen {
 		);
 		
 		drawCenteredString(matrices, getTitle().getString(), centerX, startY + 10, 0x404040);
-		
-		String scaleFactor = String.format("\u00a7%s%s\u00a7rx",
-				mod.getScaleFactor() >= 4.0 ? "4" : "0", mod.getScaleFactor());
-		drawCenteredString(matrices, scaleFactor,
-				centerX - 55, centerY - 34, 0x000000);
+
+		drawCenteredString(matrices, String.format("\u00a7%s%s\u00a7rx",
+				mod.getScaleFactor() >= 4.0 ? "4" : "0", mod.getScaleFactor()),
+				centerX - 55, centerY - 36, 0x000000);
 
 		drawCenteredString(matrices, String.format("\u00a78%sx%s\u00a7r",
 				ResolutionControlMod.getInstance().getCurrentWidth(),
 				ResolutionControlMod.getInstance().getCurrentHeight()),
-				centerX - 55, centerY - 20, 0x000000);
+				centerX - 55, centerY - 24, 0x000000);
+
+		drawCenteredString(matrices, String.format("\u00a78Est: %s\u00a7r",
+				MetricFormatter.format(ResolutionControlMod.getInstance().getEstimatedMemory()) + "B"),
+				centerX - 55, centerY - 12, 0x000000);
 
 		drawLeftAlignedString(matrices, "Upscale:", centerX + 5, centerY - 40, 0x000000);
 		drawLeftAlignedString(matrices, "Downscale:", centerX + 5, centerY - 5, 0x000000);
