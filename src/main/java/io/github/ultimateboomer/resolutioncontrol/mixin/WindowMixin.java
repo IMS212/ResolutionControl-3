@@ -13,17 +13,32 @@ import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 public abstract class WindowMixin {
 	@Inject(at = @At("RETURN"), method = "getFramebufferWidth", cancellable = true)
 	private void getFramebufferWidth(CallbackInfoReturnable<Integer> callbackInfo) {
-		callbackInfo.setReturnValue(scale(callbackInfo.getReturnValueI()));
+		int scaled;
+		if (ResolutionControlMod.getInstance().isScreenshotting()) {
+			scaled = ResolutionControlMod.getInstance().getScreenshotWidth();
+		} else {
+			scaled = scale(callbackInfo.getReturnValueI());
+		}
+
+		callbackInfo.setReturnValue(scaled);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "getFramebufferHeight", cancellable = true)
 	private void getFramebufferHeight(CallbackInfoReturnable<Integer> callbackInfo) {
-		callbackInfo.setReturnValue(scale(callbackInfo.getReturnValueI()));
+		int scaled;
+		if (ResolutionControlMod.getInstance().isScreenshotting()) {
+			scaled = ResolutionControlMod.getInstance().getScreenshotHeight();
+		} else {
+			scaled = scale(callbackInfo.getReturnValueI());
+		}
+
+		callbackInfo.setReturnValue(scaled);
 	}
 	
 	private int scale(int value) {
 		double scaleFactor = ResolutionControlMod.getInstance().getCurrentScaleFactor();
 		return Math.max(MathHelper.ceil((double) value * scaleFactor), 1);
+
 	}
 	
 	@Inject(at = @At("RETURN"), method = "getScaleFactor", cancellable = true)

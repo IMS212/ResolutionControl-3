@@ -15,13 +15,19 @@ public abstract class WorldRendererMixin {
 	private Framebuffer entityOutlinesFramebuffer;
 	
 	@Inject(at = @At("RETURN"), method = "loadEntityOutlineShader")
-	private void onLoadEntityOutlineShader(CallbackInfo callbackInfo) {
+	private void onLoadEntityOutlineShader(CallbackInfo ci) {
 		ResolutionControlMod.getInstance().resize(entityOutlinesFramebuffer);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "onResized")
-	private void onOnResized(CallbackInfo callbackInfo) {
+	private void onOnResized(CallbackInfo ci) {
 		if (entityOutlinesFramebuffer == null) return;
 		ResolutionControlMod.getInstance().resize(entityOutlinesFramebuffer);
 	}
+
+	@Inject(at = @At("RETURN"), method = "loadTransparencyShader")
+	private void onLoadTransparencyShader(CallbackInfo ci) {
+		ResolutionControlMod.getInstance().resizeMinecraftFramebuffers();
+	}
+
 }

@@ -1,6 +1,6 @@
 package io.github.ultimateboomer.resolutioncontrol;
 
-import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
+import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.MainSettingsScreen;
 import io.github.ultimateboomer.resolutioncontrol.util.Config;
 import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
 import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
@@ -38,17 +38,26 @@ public class ResolutionControlMod implements ModInitializer {
 	private KeyBinding screenshotKey;
 	
 	private boolean shouldScale = false;
+	private boolean screenshotShouldScale = false;
 	
 	@Nullable
 	private Framebuffer framebuffer;
+
+	@Nullable
+	private Framebuffer screenshotFrameBuffer;
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
+
+	@Nullable
+	private Framebuffer clientFramebuffer2;
 
 	private int currentWidth;
 	private int currentHeight;
 
 	private long estimatedMemory;
+
+	private boolean screenshot = false;
 	
 	@Override
 	public void onInitialize() {
@@ -71,29 +80,19 @@ public class ResolutionControlMod implements ModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (settingsKey.wasPressed()) {
-				client.openScreen(new SettingsScreen());
+				client.openScreen(new MainSettingsScreen());
 			}
-
-
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (screenshotKey.wasPressed()) {
-				if (framebuffer == null) return;
-				if (client.player == null) return;
-
-				ScreenshotUtils.saveScreenshot(client.runDirectory,
-						SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
-						framebuffer.textureWidth, framebuffer.textureHeight, framebuffer,
-						text -> client.player.sendMessage(text, false));
+				this.screenshot = true;
 			}
 		});
 	}
 	
 	public void setShouldScale(boolean shouldScale) {
 		if (shouldScale == this.shouldScale) return;
-		
-//		if (getScaleFactor() == 1) return;
 		
 		Window window = getWindow();
 		if (framebuffer == null) {
@@ -113,23 +112,109 @@ public class ResolutionControlMod implements ModInitializer {
 		// swap out framebuffers as needed
 		if (shouldScale) {
 			clientFramebuffer = client.getFramebuffer();
-			setClientFramebuffer(framebuffer);
-			framebuffer.beginWrite(true);
+
+			if (screenshot) {
+				if (screenshotFrameBuffer != null) {
+					screenshotFrameBuffer.delete();
+				}
+
+				resizeMinecraftFramebuffers();
+
+				screenshotFrameBuffer = new Framebuffer(
+						getScreenshotWidth(), getScreenshotHeight(),
+						true, MinecraftClient.IS_SYSTEM_MAC);
+
+				setClientFramebuffer(screenshotFrameBuffer);
+
+				screenshotFrameBuffer.beginWrite(false);
+			} else {
+				setClientFramebuffer(framebuffer);
+
+				framebuffer.beginWrite(true);
+			}
 			// nothing on the client's framebuffer yet
 		} else {
 			setClientFramebuffer(clientFramebuffer);
 			client.getFramebuffer().beginWrite(true);
 			framebuffer.draw(
-				window.getFramebufferWidth(),
-				window.getFramebufferHeight()
+					window.getFramebufferWidth(),
+					window.getFramebufferHeight()
 			);
+
+			// Screenshot framebuffer
+			if (screenshot) {
+				screenshotFrameBuffer.draw(
+						getScreenshotWidth(), getScreenshotHeight()
+				);
+
+				ScreenshotUtils.saveScreenshot(client.runDirectory,
+						SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
+						framebuffer.textureWidth, framebuffer.textureHeight, screenshotFrameBuffer,
+						text -> client.player.sendMessage(text, false));
+
+				screenshotFrameBuffer.delete();
+				screenshotFrameBuffer = null;
+				screenshot = false;
+				resizeMinecraftFramebuffers();
+			}
+
+
 		}
 		
 		client.getProfiler().swap("level");
 	}
+
+//	public void setScreenshotShouldScale(boolean shouldScale) {
+//		if (shouldScale == this.screenshotShouldScale) return;
+//
+//		Window window = getWindow();
+//
+//		this.screenshotShouldScale = shouldScale;
+//
+//		client.getProfiler().swap(shouldScale ? "startScaling" : "finishScaling");
+//
+//		// swap out framebuffers as needed
+//		if (shouldScale) {
+//			if (screenshotFrameBuffer != null) {
+//				screenshotFrameBuffer.delete();
+//			}
+//
+//			screenshotFrameBuffer = new Framebuffer(
+//					getScreenshotWidth(), getScreenshotHeight(),
+//					true, MinecraftClient.IS_SYSTEM_MAC);
+//
+//			clientFramebuffer2 = client.getFramebuffer();
+//			setClientFramebuffer(screenshotFrameBuffer);
+//
+////			resize(screenshotFrameBuffer);
+//			resizeMinecraftFramebuffers();
+//
+//			screenshotFrameBuffer.beginWrite(true);
+//			// nothing on the client's framebuffer yet
+//		} else {
+//			setClientFramebuffer(clientFramebuffer2);
+//			client.getFramebuffer().beginWrite(true);
+//			screenshotFrameBuffer.draw(
+//					window.getFramebufferWidth(),
+//					window.getFramebufferHeight()
+//			);
+//
+//			ScreenshotUtils.saveScreenshot(client.runDirectory,
+//					SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
+//					screenshotFrameBuffer.textureWidth, screenshotFrameBuffer.textureHeight,
+//					screenshotFrameBuffer,
+//					text -> client.player.sendMessage(text, false));
+//
+//			screenshotFrameBuffer.delete();
+//			screenshotFrameBuffer = null;
+//			screenshot = false;
+//		}
+//
+//		client.getProfiler().swap("level");
+//	}
 	
 	public double getScaleFactor() {
-		return Config.getScaleFactor();
+		return Config.getInstance().scaleFactor;
 	}
 	
 	public void setScaleFactor(double scaleFactor) {
@@ -143,11 +228,11 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public ScalingAlgorithm getUpscaleAlgorithm() {
-		return Config.getUpscaleAlgorithm();
+		return Config.getInstance().upscaleAlgorithm;
 	}
 
 	public void setUpscaleAlgorithm(ScalingAlgorithm algorithm) {
-		if (algorithm == Config.getUpscaleAlgorithm()) return;
+		if (algorithm == Config.getInstance().upscaleAlgorithm) return;
 
 		Config.getInstance().upscaleAlgorithm = algorithm;
 
@@ -166,11 +251,11 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public ScalingAlgorithm getDownscaleAlgorithm() {
-		return Config.getDownscaleAlgorithm();
+		return Config.getInstance().downscaleAlgorithm;
 	}
 
 	public void setDownscaleAlgorithm(ScalingAlgorithm algorithm) {
-		if (algorithm == Config.getDownscaleAlgorithm()) return;
+		if (algorithm == Config.getInstance().downscaleAlgorithm) return;
 
 		Config.getInstance().downscaleAlgorithm = algorithm;
 
@@ -189,7 +274,27 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 	
 	public double getCurrentScaleFactor() {
-		return shouldScale ? Config.getScaleFactor() : 1;
+		return shouldScale ? Config.getInstance().scaleFactor : 1;
+	}
+
+	public boolean getUsingIndependentScreenshotScale() {
+		return Config.getInstance().independentScreenshotScale;
+	}
+
+	public int getScreenshotWidth() {
+		return Config.getInstance().screenshotWidth;
+	}
+
+	public void setScreenshotWidth(int width) {
+		Config.getInstance().screenshotWidth = width;
+	}
+
+	public int getScreenshotHeight() {
+		return Config.getInstance().screenshotHeight;
+	}
+
+	public void setScreenshotHeight(int height) {
+		Config.getInstance().screenshotHeight = height;
 	}
 	
 	public void onResolutionChanged() {
@@ -199,31 +304,48 @@ public class ResolutionControlMod implements ModInitializer {
 	@SuppressWarnings("ConstantConditions")
 	private void updateFramebufferSize() {
 		if (framebuffer == null) return;
-		
-//		if (getScaleFactor() != 1) {
-//
-//		}
-		// resize if not unused
+
 		resize(framebuffer);
 		
-		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
-	}
-	
-	public void resize(Framebuffer framebuffer) {
-		boolean prev = shouldScale;
-		shouldScale = true;
-		framebuffer.resize(
-			getWindow().getFramebufferWidth(),
-			getWindow().getFramebufferHeight(),
-			MinecraftClient.IS_SYSTEM_MAC
-		);
-		shouldScale = prev;
+		resizeMinecraftFramebuffers();
 
 		currentWidth = framebuffer.textureWidth;
 		currentHeight = framebuffer.textureHeight;
 
 		// Framebuffer uses color (4 x 8 = 32 bit int) and depth (32 bit float)
 		estimatedMemory = (long) currentWidth * currentHeight * 8;
+	}
+
+	public void resizeMinecraftFramebuffers() {
+		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
+		resize(client.worldRenderer.getTranslucentFramebuffer());
+		resize(client.worldRenderer.getEntityFramebuffer());
+		resize(client.worldRenderer.getParticlesFramebuffer());
+		resize(client.worldRenderer.getWeatherFramebuffer());
+		resize(client.worldRenderer.getCloudsFramebuffer());
+	}
+	
+	public void resize(@Nullable Framebuffer framebuffer) {
+		if (framebuffer == null) return;
+
+		boolean prev = shouldScale;
+		shouldScale = true;
+		if (screenshot) {
+			framebuffer.resize(
+					getScreenshotWidth(),
+					getScreenshotHeight(),
+					MinecraftClient.IS_SYSTEM_MAC
+			);
+		} else {
+			framebuffer.resize(
+					getWindow().getFramebufferWidth(),
+					getWindow().getFramebufferHeight(),
+					MinecraftClient.IS_SYSTEM_MAC
+			);
+		}
+		shouldScale = prev;
+
+
 	}
 	
 	private Window getWindow() {
@@ -248,6 +370,10 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public long getEstimatedMemory() {
 		return estimatedMemory;
+	}
+
+	public boolean isScreenshotting() {
+		return screenshot;
 	}
 
 	public interface MutableMinecraftClient {

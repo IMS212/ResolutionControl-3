@@ -3,7 +3,7 @@ package io.github.ultimateboomer.resolutioncontrol.compat.modmenu;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import net.minecraft.client.gui.screen.Screen;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
-import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
+import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.MainSettingsScreen;
 
 import java.util.function.Function;
 
@@ -15,6 +15,6 @@ public final class ModMenuInfo implements ModMenuApi {
 	
 	@Override
 	public Function<Screen, ? extends Screen> getConfigScreenFactory() {
-		return SettingsScreen::new;
+		return MainSettingsScreen::new;
 	}
 }
