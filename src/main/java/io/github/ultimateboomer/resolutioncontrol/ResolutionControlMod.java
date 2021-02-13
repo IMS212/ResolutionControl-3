@@ -126,7 +126,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 				setClientFramebuffer(screenshotFrameBuffer);
 
-				screenshotFrameBuffer.beginWrite(false);
+				screenshotFrameBuffer.beginWrite(true);
 			} else {
 				setClientFramebuffer(framebuffer);
 
@@ -136,15 +136,11 @@ public class ResolutionControlMod implements ModInitializer {
 		} else {
 			setClientFramebuffer(clientFramebuffer);
 			client.getFramebuffer().beginWrite(true);
-			framebuffer.draw(
-					window.getFramebufferWidth(),
-					window.getFramebufferHeight()
-			);
 
 			// Screenshot framebuffer
 			if (screenshot) {
 				screenshotFrameBuffer.draw(
-						getScreenshotWidth(), getScreenshotHeight()
+						window.getFramebufferWidth(), window.getFramebufferHeight()
 				);
 
 				ScreenshotUtils.saveScreenshot(client.runDirectory,
@@ -156,62 +152,16 @@ public class ResolutionControlMod implements ModInitializer {
 				screenshotFrameBuffer = null;
 				screenshot = false;
 				resizeMinecraftFramebuffers();
+			} else {
+				framebuffer.draw(
+						window.getFramebufferWidth(),
+						window.getFramebufferHeight()
+				);
 			}
-
-
 		}
 		
 		client.getProfiler().swap("level");
 	}
-
-//	public void setScreenshotShouldScale(boolean shouldScale) {
-//		if (shouldScale == this.screenshotShouldScale) return;
-//
-//		Window window = getWindow();
-//
-//		this.screenshotShouldScale = shouldScale;
-//
-//		client.getProfiler().swap(shouldScale ? "startScaling" : "finishScaling");
-//
-//		// swap out framebuffers as needed
-//		if (shouldScale) {
-//			if (screenshotFrameBuffer != null) {
-//				screenshotFrameBuffer.delete();
-//			}
-//
-//			screenshotFrameBuffer = new Framebuffer(
-//					getScreenshotWidth(), getScreenshotHeight(),
-//					true, MinecraftClient.IS_SYSTEM_MAC);
-//
-//			clientFramebuffer2 = client.getFramebuffer();
-//			setClientFramebuffer(screenshotFrameBuffer);
-//
-////			resize(screenshotFrameBuffer);
-//			resizeMinecraftFramebuffers();
-//
-//			screenshotFrameBuffer.beginWrite(true);
-//			// nothing on the client's framebuffer yet
-//		} else {
-//			setClientFramebuffer(clientFramebuffer2);
-//			client.getFramebuffer().beginWrite(true);
-//			screenshotFrameBuffer.draw(
-//					window.getFramebufferWidth(),
-//					window.getFramebufferHeight()
-//			);
-//
-//			ScreenshotUtils.saveScreenshot(client.runDirectory,
-//					SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
-//					screenshotFrameBuffer.textureWidth, screenshotFrameBuffer.textureHeight,
-//					screenshotFrameBuffer,
-//					text -> client.player.sendMessage(text, false));
-//
-//			screenshotFrameBuffer.delete();
-//			screenshotFrameBuffer = null;
-//			screenshot = false;
-//		}
-//
-//		client.getProfiler().swap("level");
-//	}
 	
 	public double getScaleFactor() {
 		return Config.getInstance().scaleFactor;
