@@ -2,11 +2,14 @@ package io.github.ultimateboomer.resolutioncontrol.util;
 
 import java.text.NumberFormat;
 
-public final class MetricFormatter {
+public final class RCMathUtil {
     private static final String[] UNITS = "KMGTPE".split("");
     private static final NumberFormat FORMAT = NumberFormat.getNumberInstance();
 
-    public static String format(long n) {
+    /**
+     * Format number with metric conversion (K, M, G etc)
+     */
+    public static String formatMetric(long n) {
         if (n < 1000) {
             return n + " ";
         }

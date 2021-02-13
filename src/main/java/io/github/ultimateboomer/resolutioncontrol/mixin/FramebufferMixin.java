@@ -16,10 +16,10 @@ public abstract class FramebufferMixin {
     private void onSetTexFilter(int target, int pname, int param) {
         if (pname == GL11.GL_TEXTURE_MIN_FILTER) {
             GlStateManager.texParameter(target, pname,
-                    ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId());
+                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
         } else if (pname == GL11.GL_TEXTURE_MAG_FILTER) {
             GlStateManager.texParameter(target, pname,
-                    ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId());
+                    ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId());
         } else if (pname == GL11.GL_TEXTURE_WRAP_S || pname == GL11.GL_TEXTURE_WRAP_T) {
             // Fix linear scaling creating black borders
             GlStateManager.texParameter(target, pname, GL12.GL_CLAMP_TO_EDGE);

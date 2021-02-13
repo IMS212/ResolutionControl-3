@@ -74,7 +74,14 @@ public class ResolutionControlMod implements ModInitializer {
 				client.openScreen(new SettingsScreen());
 			}
 
+
+		});
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (screenshotKey.wasPressed()) {
+				if (framebuffer == null) return;
+				if (client.player == null) return;
+
 				ScreenshotUtils.saveScreenshot(client.runDirectory,
 						SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
 						framebuffer.textureWidth, framebuffer.textureHeight, framebuffer,
@@ -86,7 +93,7 @@ public class ResolutionControlMod implements ModInitializer {
 	public void setShouldScale(boolean shouldScale) {
 		if (shouldScale == this.shouldScale) return;
 		
-		if (getScaleFactor() == 1) return;
+//		if (getScaleFactor() == 1) return;
 		
 		Window window = getWindow();
 		if (framebuffer == null) {
@@ -126,7 +133,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 	
 	public void setScaleFactor(double scaleFactor) {
-		if (scaleFactor == Config.getScaleFactor()) return;
+//		if (scaleFactor == Config.getScaleFactor()) return;
 		
 		Config.getInstance().scaleFactor = scaleFactor;
 		
@@ -184,22 +191,20 @@ public class ResolutionControlMod implements ModInitializer {
 	public double getCurrentScaleFactor() {
 		return shouldScale ? Config.getScaleFactor() : 1;
 	}
-
-	public ScalingAlgorithm getCurrentScalingAlgorithm() {
-		return Config.getScaleFactor() > 1.0 ? Config.getUpscaleAlgorithm() : Config.getDownscaleAlgorithm();
-	}
 	
 	public void onResolutionChanged() {
 		updateFramebufferSize();
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	private void updateFramebufferSize() {
 		if (framebuffer == null) return;
 		
-		if (getScaleFactor() != 1) {
-			// resize if not unused
-			resize(framebuffer);
-		}
+//		if (getScaleFactor() != 1) {
+//
+//		}
+		// resize if not unused
+		resize(framebuffer);
 		
 		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
 	}

@@ -1,5 +1,14 @@
 {
+  "key.categories.resolutioncontrol": "Resolution Control",
+
   "key.resolutioncontrol.settings": "Resolution Control Settings",
-  "screen.resolutioncontrol.settings.title": "Resolution Control Settings",
-  "screen.resolutioncontrol.settings.current": "Current Scale Factor: %sx"
+  "key.resolutioncontrol.screenshot": "Screenshot Framebuffer",
+
+  "resolutioncontrol.settings.title": "Resolution Control Settings",
+
+  "resolutioncontrol.scaling.upscale": "Upscale",
+  "resolutioncontrol.scaling.downscale": "Downscale",
+  "resolutioncontrol.scaling.linear": "Linear",
+  "resolutioncontrol.scaling.nearest": "Nearest",
+  "resolutioncontrol.scaling.estimate": "Est: %s"
 }
