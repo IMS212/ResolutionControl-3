@@ -16,12 +16,14 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
 
     private static final Text increaseText = new LiteralText("x2");
     private static final Text decreaseText = new LiteralText("/2");
+    private static final Text resetText = new LiteralText("R");
 
     private TextFieldWidget widthTextField;
     private TextFieldWidget heightTextField;
 
     private ButtonWidget increaseButton;
     private ButtonWidget decreaseButton;
+    private ButtonWidget resetButton;
 
     private ButtonWidget toggleOverrideSizeButton;
     private ButtonWidget toggleAlwaysAllocatedButton;
@@ -76,18 +78,25 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         addButton(heightTextField);
 
         increaseButton = new ButtonWidget(
-                centerX - 10 - 50, centerY + 35,
+                centerX - 10 - 60, centerY + 35,
                 20, 20,
                 increaseText,
                 button -> multiply(2.0));
         addButton(increaseButton);
 
         decreaseButton = new ButtonWidget(
-                centerX + 10 - 50, centerY + 35,
+                centerX + 10 - 60, centerY + 35,
                 20, 20,
                 decreaseText,
                 button -> multiply(0.5));
         addButton(decreaseButton);
+
+        resetButton = new ButtonWidget(
+                centerX + 30 - 60, centerY + 35,
+                20, 20,
+                resetText,
+                button -> resetSize());
+        addButton(resetButton);
 
         calculateSize();
     }
@@ -157,6 +166,13 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
             heightTextField.setText(String.valueOf((int) (Double.parseDouble(heightTextField.getText()) * mul)));
             calculateSize();
         }
+    }
+
+    private void resetSize() {
+        mod.setScreenshotWidth(3840);
+        mod.setScreenshotHeight(2160);
+        widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
+        heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
     }
 
     private void calculateSize() {

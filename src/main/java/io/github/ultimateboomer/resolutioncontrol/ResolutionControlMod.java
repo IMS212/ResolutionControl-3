@@ -264,7 +264,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public int getScreenshotWidth() {
-		return Config.getInstance().screenshotWidth;
+		return Math.max(Config.getInstance().screenshotWidth, 1);
 	}
 
 	public void setScreenshotWidth(int width) {
@@ -272,7 +272,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public int getScreenshotHeight() {
-		return Config.getInstance().screenshotHeight;
+		return Math.max(Config.getInstance().screenshotHeight, 1);
 	}
 
 	public void setScreenshotHeight(int height) {

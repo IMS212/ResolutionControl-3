@@ -3,6 +3,8 @@ package io.github.ultimateboomer.resolutioncontrol.mixin;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -11,14 +13,26 @@ import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 @Mixin(Window.class)
 public abstract class WindowMixin {
+	@Shadow private int framebufferWidth;
+
+	@Shadow private int framebufferHeight;
+
 	@Inject(at = @At("RETURN"), method = "getFramebufferWidth", cancellable = true)
 	private void getFramebufferWidth(CallbackInfoReturnable<Integer> ci) {
-		ci.setReturnValue(scale(ci.getReturnValueI()));
+		if (getRCMod().isScreenshotting()) {
+			ci.setReturnValue(getRCMod().getScreenshotWidth() * this.framebufferHeight / getRCMod().getScreenshotHeight());
+		} else {
+			ci.setReturnValue(scale(ci.getReturnValueI()));
+		}
 	}
 	
 	@Inject(at = @At("RETURN"), method = "getFramebufferHeight", cancellable = true)
 	private void getFramebufferHeight(CallbackInfoReturnable<Integer> ci) {
-		ci.setReturnValue(scale(ci.getReturnValueI()));
+		if (getRCMod().isScreenshotting()) {
+			ci.setReturnValue(getRCMod().getScreenshotHeight() * this.framebufferHeight / getRCMod().getScreenshotHeight());
+		} else {
+			ci.setReturnValue(scale(ci.getReturnValueI()));
+		}
 	}
 	
 	private int scale(int value) {
@@ -39,5 +53,10 @@ public abstract class WindowMixin {
 	@Inject(at = @At("RETURN"), method = "updateFramebufferSize")
 	private void onUpdateFramebufferSize(CallbackInfo ci) {
 		ResolutionControlMod.getInstance().onResolutionChanged();
+	}
+
+	@Unique
+	private ResolutionControlMod getRCMod() {
+		return ResolutionControlMod.getInstance();
 	}
 }
