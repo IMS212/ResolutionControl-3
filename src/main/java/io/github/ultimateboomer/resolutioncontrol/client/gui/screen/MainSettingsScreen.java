@@ -53,8 +53,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 	@Override
 	protected void init() {
 		super.init();
-		menuButtons.get(0).active = false;
-		
+
 		int buttonSize = 20;
 		int buttonOffset = buttonSize / 2;
 		int buttonY = centerY + 15 - buttonSize / 2;

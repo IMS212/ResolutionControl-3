@@ -18,9 +18,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.CallbackI;
-
-import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
@@ -93,9 +90,16 @@ public class ResolutionControlMod implements ModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (screenshotKey.wasPressed()) {
-				this.screenshot = true;
-				client.player.sendMessage(
-						new TranslatableText("resolutioncontrol.screenshot.wait"), false);
+				if (getOverrideScreenshotScale()) {
+					this.screenshot = true;
+					client.player.sendMessage(
+							new TranslatableText("resolutioncontrol.screenshot.wait"), false);
+				} else {
+					ScreenshotUtils.saveScreenshot(client.runDirectory,
+							SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
+							framebuffer.textureWidth, framebuffer.textureHeight, framebuffer,
+							text -> client.player.sendMessage(text, false));
+				}
 			}
 		});
 	}
@@ -237,8 +241,12 @@ public class ResolutionControlMod implements ModInitializer {
 		return shouldScale ? Config.getInstance().scaleFactor : 1;
 	}
 
-	public boolean getUsingIndependentScreenshotScale() {
+	public boolean getOverrideScreenshotScale() {
 		return Config.getInstance().overrideScreenshotScale;
+	}
+
+	public void setOverrideScreenshotScale(boolean value) {
+		Config.getInstance().overrideScreenshotScale = value;
 	}
 
 	public int getScreenshotWidth() {

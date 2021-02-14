@@ -7,6 +7,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,32 +40,41 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     @Override
     protected void init() {
         super.init();
-        menuButtons.get(1).active = false;
 
+        toggleOverrideSizeButton = new ButtonWidget(
+                centerX + 20, centerY - 40,
+                50, 20,
+                this.getOverrideSizeText(),
+                button -> {
+                    mod.setOverrideScreenshotScale(!mod.getOverrideScreenshotScale());
+                    button.setMessage(this.getOverrideSizeText());
+                }
+        );
+        addButton(toggleOverrideSizeButton);
 
         widthTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 35 - textFieldSize / 2, centerY - 6,
+                centerX - 35 - textFieldSize / 2, centerY ,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
         addButton(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 25 + textFieldSize / 2, centerY - 6,
+                centerX - 25 + textFieldSize / 2, centerY ,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
         addButton(heightTextField);
 
         increaseButton = new ButtonWidget(
-                centerX - 10 - 40, centerY + 20,
+                centerX - 10 - 40, centerY + 24,
                 20, 20,
                 increaseText,
                 button -> multiply(2.0));
         addButton(increaseButton);
 
         decreaseButton = new ButtonWidget(
-                centerX + 10 - 40, centerY + 20,
+                centerX + 10 - 40, centerY + 24,
                 20, 20,
                 decreaseText,
                 button -> multiply(0.5));
@@ -75,9 +85,14 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
 
-        drawCenteredString(matrices,
+        drawLeftAlignedString(matrices,
+                "\u00a78" + text("settings.screenshot.overrideSize").getString(),
+                centerX - 65, centerY - 35,
+                0x000000);
+
+        drawLeftAlignedString(matrices,
                 "\u00a78" + text("settings.screenshot.size").getString(),
-                centerX + 5 - textFieldSize / 2, centerY - 36,
+                centerX - 65, centerY - 12,
                 0x000000);
     }
 
@@ -104,5 +119,10 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
             widthTextField.setText(String.valueOf((int) (Double.parseDouble(widthTextField.getText()) * mul)));
             heightTextField.setText(String.valueOf((int) (Double.parseDouble(heightTextField.getText()) * mul)));
         }
+    }
+
+    private Text getOverrideSizeText() {
+        return mod.getOverrideScreenshotScale() ? new TranslatableText("addServer.resourcePack.enabled")
+                : new TranslatableText("addServer.resourcePack.disabled");
     }
 }

@@ -8,12 +8,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class SettingsScreen extends Screen {
@@ -49,7 +47,7 @@ public class SettingsScreen extends Screen {
 //    protected ButtonWidget mainSettingsButton;
 //    protected ButtonWidget screenshotSettingsButton;
 
-    protected List<ButtonWidget> menuButtons;
+    protected Map<Class<? extends SettingsScreen>, ButtonWidget> menuButtons;
 
     protected ButtonWidget doneButton;
 
@@ -68,24 +66,28 @@ public class SettingsScreen extends Screen {
         startY = centerY - containerHeight / 2;
 
         // Init menu buttons
-        menuButtons = new ArrayList<>();
+        menuButtons = new LinkedHashMap<>();
         final int menuButtonWidth = 80;
         final int menuButtonHeight = 20;
-        int o = 0;
+        MutableInt o = new MutableInt();
 
-        for (Supplier<SettingsScreen> screenSupplier : screensSupplierList.values()) {
-            SettingsScreen r = screenSupplier.get();
+        screensSupplierList.forEach((c, supplier) -> {
+            SettingsScreen r = supplier.get();
             ButtonWidget b = new ButtonWidget(
-                    startX - menuButtonWidth - 20, startY + o,
+                    startX - menuButtonWidth - 20, startY + o.getValue(),
                     menuButtonWidth, menuButtonHeight,
                     r.getTitle(),
-                    button -> client.openScreen(screenSupplier.get())
+                    button -> client.openScreen(supplier.get())
             );
-            menuButtons.add(b);
-            o += 25;
-        }
 
-        menuButtons.forEach(this::addButton);
+            if (this.getClass().equals(c))
+                b.active = false;
+
+            menuButtons.put(c, b);
+            o.add(25);
+        });
+
+        menuButtons.values().forEach(this::addButton);
 
         doneButton = new ButtonWidget(
                 centerX + 15, startY + containerHeight - 30,
