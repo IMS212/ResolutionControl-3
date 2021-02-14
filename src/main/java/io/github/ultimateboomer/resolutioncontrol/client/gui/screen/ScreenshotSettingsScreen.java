@@ -6,7 +6,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +23,7 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     private ButtonWidget decreaseButton;
 
     private ButtonWidget toggleOverrideSizeButton;
+    private ButtonWidget toggleAlwaysAllocatedButton;
 
     private final int buttonSize = 20;
     private final int textFieldSize = 60;
@@ -39,37 +39,48 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         toggleOverrideSizeButton = new ButtonWidget(
                 centerX + 20, centerY - 40,
                 50, 20,
-                this.getOverrideSizeText(),
+                getStateText(mod.getOverrideScreenshotScale()),
                 button -> {
                     mod.setOverrideScreenshotScale(!mod.getOverrideScreenshotScale());
-                    button.setMessage(this.getOverrideSizeText());
+                    button.setMessage(getStateText(mod.getOverrideScreenshotScale()));
                 }
         );
         addButton(toggleOverrideSizeButton);
 
+        toggleAlwaysAllocatedButton = new ButtonWidget(
+                centerX + 20, centerY - 20,
+                50, 20,
+                getStateText(mod.getScreenshotFramebufferAlwaysAllocated()),
+                button -> {
+                    mod.setScreenshotFramebufferAlwaysAllocated(!mod.getScreenshotFramebufferAlwaysAllocated());
+                    button.setMessage(getStateText(mod.getScreenshotFramebufferAlwaysAllocated()));
+                }
+        );
+        addButton(toggleAlwaysAllocatedButton);
+
         widthTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 45 - textFieldSize / 2, centerY ,
+                centerX - 35 - textFieldSize / 2, centerY + 10,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
         addButton(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 45 + textFieldSize / 2, centerY ,
+                centerX - 30 + textFieldSize / 2, centerY + 10,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
         addButton(heightTextField);
 
         increaseButton = new ButtonWidget(
-                centerX - 10 - 40, centerY + 24,
+                centerX - 10 - 50, centerY + 35,
                 20, 20,
                 increaseText,
                 button -> multiply(2.0));
         addButton(increaseButton);
 
         decreaseButton = new ButtonWidget(
-                centerX + 10 - 40, centerY + 24,
+                centerX + 10 - 50, centerY + 35,
                 20, 20,
                 decreaseText,
                 button -> multiply(0.5));
@@ -86,8 +97,8 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                 0x000000);
 
         drawLeftAlignedString(matrices,
-                "\u00a78" + text("settings.screenshot.size").getString(),
-                centerX - 75, centerY - 12,
+                "\u00a78" + text("settings.screenshot.alwaysAllocated").getString(),
+                centerX - 75, centerY - 15,
                 0x000000);
     }
 
@@ -114,10 +125,5 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
             widthTextField.setText(String.valueOf((int) (Double.parseDouble(widthTextField.getText()) * mul)));
             heightTextField.setText(String.valueOf((int) (Double.parseDouble(heightTextField.getText()) * mul)));
         }
-    }
-
-    private Text getOverrideSizeText() {
-        return mod.getOverrideScreenshotScale() ? new TranslatableText("addServer.resourcePack.enabled")
-                : new TranslatableText("addServer.resourcePack.disabled");
     }
 }

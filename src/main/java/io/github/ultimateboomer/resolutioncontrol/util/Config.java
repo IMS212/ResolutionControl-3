@@ -11,6 +11,8 @@ public final class Config {
 	public int screenshotWidth = 3840;
 	public int screenshotHeight = 2160;
 
+	public boolean screenshotFramebufferAlwaysAllocated = false;
+
 	public static Config getInstance() {
 		return ConfigHandler.instance.getConfig();
 	}

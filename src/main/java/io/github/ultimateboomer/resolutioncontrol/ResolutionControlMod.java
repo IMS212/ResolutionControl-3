@@ -40,7 +40,6 @@ public class ResolutionControlMod implements ModInitializer {
 	private KeyBinding screenshotKey;
 	
 	private boolean shouldScale = false;
-	private boolean screenshotShouldScale = false;
 	
 	@Nullable
 	private Framebuffer framebuffer;
@@ -50,9 +49,6 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
-
-	@Nullable
-	private Framebuffer clientFramebuffer2;
 
 	private Class<? extends SettingsScreen> lastSettingsScreen = MainSettingsScreen.class;
 
@@ -65,9 +61,6 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
 		instance = this;
 		
 		settingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -128,15 +121,15 @@ public class ResolutionControlMod implements ModInitializer {
 			clientFramebuffer = client.getFramebuffer();
 
 			if (screenshot) {
-				if (screenshotFrameBuffer != null) {
+				resizeMinecraftFramebuffers();
+
+				if (!getScreenshotFramebufferAlwaysAllocated() && screenshotFrameBuffer != null) {
 					screenshotFrameBuffer.delete();
 				}
 
-				resizeMinecraftFramebuffers();
-
-				screenshotFrameBuffer = new Framebuffer(
-						getScreenshotWidth(), getScreenshotHeight(),
-						true, MinecraftClient.IS_SYSTEM_MAC);
+				if (screenshotFrameBuffer == null) {
+					initScreenshotFramebuffer();
+				}
 
 				setClientFramebuffer(screenshotFrameBuffer);
 
@@ -162,8 +155,11 @@ public class ResolutionControlMod implements ModInitializer {
 						framebuffer.textureWidth, framebuffer.textureHeight, screenshotFrameBuffer,
 						text -> client.player.sendMessage(text, false));
 
-				screenshotFrameBuffer.delete();
-				screenshotFrameBuffer = null;
+				if (!getScreenshotFramebufferAlwaysAllocated()) {
+					screenshotFrameBuffer.delete();
+					screenshotFrameBuffer = null;
+				}
+
 				screenshot = false;
 				resizeMinecraftFramebuffers();
 			} else {
@@ -175,6 +171,12 @@ public class ResolutionControlMod implements ModInitializer {
 		}
 		
 		client.getProfiler().swap("level");
+	}
+
+	public void initScreenshotFramebuffer() {
+		screenshotFrameBuffer = new Framebuffer(
+				getScreenshotWidth(), getScreenshotHeight(),
+				true, MinecraftClient.IS_SYSTEM_MAC);
 	}
 	
 	public double getScaleFactor() {
@@ -263,6 +265,25 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public void setScreenshotHeight(int height) {
 		Config.getInstance().screenshotHeight = height;
+	}
+
+	public boolean getScreenshotFramebufferAlwaysAllocated() {
+		return Config.getInstance().screenshotFramebufferAlwaysAllocated;
+	}
+
+	public void setScreenshotFramebufferAlwaysAllocated(boolean value) {
+		Config.getInstance().screenshotFramebufferAlwaysAllocated = value;
+
+		if (value) {
+			if (this.framebuffer == null) {
+				initScreenshotFramebuffer();
+			}
+		} else {
+			if (this.screenshotFrameBuffer != null) {
+				this.screenshotFrameBuffer.delete();
+				this.screenshotFrameBuffer = null;
+			}
+		}
 	}
 	
 	public void onResolutionChanged() {

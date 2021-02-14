@@ -16,7 +16,8 @@
 
   "resolutioncontrol.settings.screenshot": "Screenshots",
   "resolutioncontrol.settings.screenshot.overrideSize": "Use set size:",
-  "resolutioncontrol.settings.screenshot.size": "Screenshot Size:",
+  "resolutioncontrol.settings.screenshot.alwaysAllocated": "Always Allocated:",
+  "resolutioncontrol.settings.screenshot.size": "Size:",
 
   "resolutioncontrol.settings.info": "Info",
   "resolutioncontrol.settings.info.gpu": "GPU:",

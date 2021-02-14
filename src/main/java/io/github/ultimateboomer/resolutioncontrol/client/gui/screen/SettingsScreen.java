@@ -167,4 +167,9 @@ public class SettingsScreen extends Screen {
     public static SettingsScreen getScreen(Class<? extends SettingsScreen> screenClass) {
         return screensSupplierList.get(screenClass).apply(null);
     }
+
+    protected static Text getStateText(boolean enabled) {
+        return enabled ? new TranslatableText("addServer.resourcePack.enabled")
+                : new TranslatableText("addServer.resourcePack.disabled");
+    }
 }
