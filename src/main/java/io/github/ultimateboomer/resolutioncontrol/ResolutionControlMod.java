@@ -4,6 +4,7 @@ import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.MainSettings
 import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
 import io.github.ultimateboomer.resolutioncontrol.util.Config;
 import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
+import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
 import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -90,13 +91,17 @@ public class ResolutionControlMod implements ModInitializer {
 					client.player.sendMessage(
 							new TranslatableText("resolutioncontrol.screenshot.wait"), false);
 				} else {
-					ScreenshotUtils.saveScreenshot(client.runDirectory,
-							SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
-							framebuffer.textureWidth, framebuffer.textureHeight, framebuffer,
-							text -> client.player.sendMessage(text, false));
+					saveScreenshot(framebuffer);
 				}
 			}
 		});
+	}
+
+	private void saveScreenshot(Framebuffer fb) {
+		ScreenshotUtils.saveScreenshot(client.runDirectory,
+				SCREENSHOT_PREFIX + RCUtil.getScreenshotFilename(null),
+				fb.textureWidth, fb.textureHeight, fb,
+				text -> client.player.sendMessage(text, false));
 	}
 	
 	public void setShouldScale(boolean shouldScale) {
@@ -152,10 +157,7 @@ public class ResolutionControlMod implements ModInitializer {
 						window.getFramebufferWidth(), window.getFramebufferHeight()
 				);
 
-				ScreenshotUtils.saveScreenshot(client.runDirectory,
-						SCREENSHOT_PREFIX + ScreenshotUtils.getScreenshotFilename(null),
-						framebuffer.textureWidth, framebuffer.textureHeight, screenshotFrameBuffer,
-						text -> client.player.sendMessage(text, false));
+				saveScreenshot(screenshotFrameBuffer);
 
 				if (!isScreenshotFramebufferAlwaysAllocated()) {
 					screenshotFrameBuffer.delete();

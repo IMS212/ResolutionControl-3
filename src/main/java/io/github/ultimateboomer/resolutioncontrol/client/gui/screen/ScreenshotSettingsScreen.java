@@ -1,6 +1,6 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
-import io.github.ultimateboomer.resolutioncontrol.util.RCMathUtil;
+import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -122,7 +122,7 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
 
         drawLeftAlignedString(matrices,
                 "\u00a78" + text("settings.main.estimate").getString()
-                        + " " + RCMathUtil.formatMetric(estimatedSize) + "B",
+                        + " " + RCUtil.formatMetric(estimatedSize) + "B",
                 centerX + 25, centerY + 12,
                 0x000000);
     }
