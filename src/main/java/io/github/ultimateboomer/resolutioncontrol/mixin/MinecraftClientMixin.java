@@ -26,7 +26,7 @@ public abstract class MinecraftClientMixin implements ResolutionControlMod.Mutab
 	@Inject(method = "<init>", at = @At(value = "NEW", target = "net/minecraft/client/gl/Framebuffer"))
 	private void onInitFramebuffer(CallbackInfo ci) {
 		ResolutionControlMod mod = ResolutionControlMod.getInstance();
-		if (mod.getScreenshotFramebufferAlwaysAllocated()) {
+		if (mod.isScreenshotFramebufferAlwaysAllocated()) {
 			mod.initScreenshotFramebuffer();
 		}
 	}

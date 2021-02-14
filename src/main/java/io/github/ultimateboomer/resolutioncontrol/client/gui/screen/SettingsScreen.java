@@ -152,15 +152,15 @@ public class SettingsScreen extends Screen {
     };
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    protected void drawCenteredString(MatrixStack matrices, String text, int x, int y, int color) {
+    protected void drawCenteredString(MatrixStack matrices, String text, float x, float y, int color) {
         textRenderer.draw(matrices, text, x - textRenderer.getWidth(text) / 2, y, color);
     }
 
-    protected void drawLeftAlignedString(MatrixStack matrices, String text, int x, int y, int color) {
+    protected void drawLeftAlignedString(MatrixStack matrices, String text, float x, float y, int color) {
         textRenderer.draw(matrices, text, x, y, color);
     }
 
-    protected void drawRightAlignedString(MatrixStack matrices, String text, int x, int y, int color) {
+    protected void drawRightAlignedString(MatrixStack matrices, String text, float x, float y, int color) {
         textRenderer.draw(matrices, text, x - textRenderer.getWidth(text), y, color);
     }
 

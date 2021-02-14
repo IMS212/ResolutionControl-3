@@ -1,5 +1,6 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
+import io.github.ultimateboomer.resolutioncontrol.util.RCMathUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -26,7 +27,9 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     private ButtonWidget toggleAlwaysAllocatedButton;
 
     private final int buttonSize = 20;
-    private final int textFieldSize = 60;
+    private final int textFieldSize = 40;
+
+    private long estimatedSize;
 
     public ScreenshotSettingsScreen(@Nullable Screen parent) {
         super(text("settings.screenshot"), parent);
@@ -50,23 +53,23 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         toggleAlwaysAllocatedButton = new ButtonWidget(
                 centerX + 20, centerY - 20,
                 50, 20,
-                getStateText(mod.getScreenshotFramebufferAlwaysAllocated()),
+                getStateText(mod.isScreenshotFramebufferAlwaysAllocated()),
                 button -> {
-                    mod.setScreenshotFramebufferAlwaysAllocated(!mod.getScreenshotFramebufferAlwaysAllocated());
-                    button.setMessage(getStateText(mod.getScreenshotFramebufferAlwaysAllocated()));
+                    mod.setScreenshotFramebufferAlwaysAllocated(!mod.isScreenshotFramebufferAlwaysAllocated());
+                    button.setMessage(getStateText(mod.isScreenshotFramebufferAlwaysAllocated()));
                 }
         );
         addButton(toggleAlwaysAllocatedButton);
 
         widthTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 35 - textFieldSize / 2, centerY + 10,
+                centerX - 85, centerY + 7,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
         addButton(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 30 + textFieldSize / 2, centerY + 10,
+                centerX - 35, centerY + 7,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
@@ -85,6 +88,8 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                 decreaseText,
                 button -> multiply(0.5));
         addButton(decreaseButton);
+
+        calculateSize();
     }
 
     @Override
@@ -100,6 +105,23 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                 "\u00a78" + text("settings.screenshot.alwaysAllocated").getString(),
                 centerX - 75, centerY - 15,
                 0x000000);
+
+        drawLeftAlignedString(matrices,
+                "\u00a78x",
+                centerX - 42.5f, centerY + 12,
+                0x000000);
+
+        drawLeftAlignedString(matrices,
+                "\u00a78" + text("settings.main.estimate").getString()
+                        + " " + RCMathUtil.formatMetric(estimatedSize) + "B",
+                centerX + 25, centerY + 12,
+                0x000000);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        calculateSize();
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -113,8 +135,17 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     protected void applySettingsAndCleanup() {
         if (NumberUtils.isParsable(widthTextField.getText())
                 && NumberUtils.isParsable(heightTextField.getText())) {
-            mod.setScreenshotWidth((int) Double.parseDouble(widthTextField.getText()));
-            mod.setScreenshotHeight((int) Double.parseDouble(heightTextField.getText()));
+            int newWidth = (int) Double.parseDouble(widthTextField.getText());
+            int newHeight = (int) Double.parseDouble(heightTextField.getText());
+
+            if (newWidth != mod.getScreenshotWidth() || newHeight != mod.getScreenshotHeight()) {
+                mod.setScreenshotWidth(newWidth);
+                mod.setScreenshotHeight(newHeight);
+
+                if (mod.isScreenshotFramebufferAlwaysAllocated()) {
+                    mod.initScreenshotFramebuffer();
+                }
+            }
         }
         super.applySettingsAndCleanup();
     }
@@ -124,6 +155,12 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                 && NumberUtils.isParsable(heightTextField.getText())) {
             widthTextField.setText(String.valueOf((int) (Double.parseDouble(widthTextField.getText()) * mul)));
             heightTextField.setText(String.valueOf((int) (Double.parseDouble(heightTextField.getText()) * mul)));
+            calculateSize();
         }
+    }
+
+    private void calculateSize() {
+        estimatedSize = (long) (Double.parseDouble(widthTextField.getText())
+                        * Double.parseDouble(heightTextField.getText()) * 8);
     }
 }

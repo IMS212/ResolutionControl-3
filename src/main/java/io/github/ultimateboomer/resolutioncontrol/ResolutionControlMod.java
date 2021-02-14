@@ -19,6 +19,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
+
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
 	
@@ -123,7 +125,7 @@ public class ResolutionControlMod implements ModInitializer {
 			if (screenshot) {
 				resizeMinecraftFramebuffers();
 
-				if (!getScreenshotFramebufferAlwaysAllocated() && screenshotFrameBuffer != null) {
+				if (!isScreenshotFramebufferAlwaysAllocated() && screenshotFrameBuffer != null) {
 					screenshotFrameBuffer.delete();
 				}
 
@@ -155,7 +157,7 @@ public class ResolutionControlMod implements ModInitializer {
 						framebuffer.textureWidth, framebuffer.textureHeight, screenshotFrameBuffer,
 						text -> client.player.sendMessage(text, false));
 
-				if (!getScreenshotFramebufferAlwaysAllocated()) {
+				if (!isScreenshotFramebufferAlwaysAllocated()) {
 					screenshotFrameBuffer.delete();
 					screenshotFrameBuffer = null;
 				}
@@ -174,6 +176,8 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public void initScreenshotFramebuffer() {
+		if (Objects.nonNull(screenshotFrameBuffer)) screenshotFrameBuffer.delete();
+
 		screenshotFrameBuffer = new Framebuffer(
 				getScreenshotWidth(), getScreenshotHeight(),
 				true, MinecraftClient.IS_SYSTEM_MAC);
@@ -249,6 +253,14 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public void setOverrideScreenshotScale(boolean value) {
 		Config.getInstance().overrideScreenshotScale = value;
+		if (value && isScreenshotFramebufferAlwaysAllocated()) {
+			initScreenshotFramebuffer();
+		} else {
+			if (screenshotFrameBuffer != null) {
+				screenshotFrameBuffer.delete();
+				screenshotFrameBuffer = null;
+			}
+		}
 	}
 
 	public int getScreenshotWidth() {
@@ -267,7 +279,7 @@ public class ResolutionControlMod implements ModInitializer {
 		Config.getInstance().screenshotHeight = height;
 	}
 
-	public boolean getScreenshotFramebufferAlwaysAllocated() {
+	public boolean isScreenshotFramebufferAlwaysAllocated() {
 		return Config.getInstance().screenshotFramebufferAlwaysAllocated;
 	}
 
@@ -275,7 +287,7 @@ public class ResolutionControlMod implements ModInitializer {
 		Config.getInstance().screenshotFramebufferAlwaysAllocated = value;
 
 		if (value) {
-			if (this.framebuffer == null) {
+			if (getOverrideScreenshotScale() && Objects.isNull(this.screenshotFrameBuffer)) {
 				initScreenshotFramebuffer();
 			}
 		} else {
