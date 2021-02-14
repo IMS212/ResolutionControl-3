@@ -2,7 +2,6 @@ package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 import io.github.ultimateboomer.resolutioncontrol.util.RCMathUtil;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -44,10 +43,6 @@ public final class MainSettingsScreen extends SettingsScreen {
 	
 	public MainSettingsScreen(@Nullable Screen parent) {
 		super(text("settings.main"), parent);
-	}
-	
-	public MainSettingsScreen() {
-		this(MinecraftClient.getInstance().currentScreen);
 	}
 	
 	@Override

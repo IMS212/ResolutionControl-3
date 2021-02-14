@@ -6,7 +6,7 @@ public final class Config {
 	public ScalingAlgorithm upscaleAlgorithm = ScalingAlgorithm.NEAREST;
 	public ScalingAlgorithm downscaleAlgorithm = ScalingAlgorithm.LINEAR;
 
-	public boolean overrideScreenshotScale = false;
+	public boolean overrideScreenshotScale = true;
 
 	public int screenshotWidth = 3840;
 	public int screenshotHeight = 2160;

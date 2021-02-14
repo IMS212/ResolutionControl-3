@@ -11,13 +11,13 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
 
+@SuppressWarnings("StaticInitializerReferencesSubClass")
 public class SettingsScreen extends Screen {
     protected static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
-
-    protected static final String settingsTitleText = text("settings.title").getString();
 
     protected static Text text(String path, Object... args) {
         return new TranslatableText(ResolutionControlMod.MOD_ID + "." + path, args);
@@ -26,12 +26,14 @@ public class SettingsScreen extends Screen {
     protected static final int containerWidth = 192;
     protected static final int containerHeight = 128;
 
-    protected static final Map<Class<? extends SettingsScreen>, Supplier<SettingsScreen>> screensSupplierList;
+    protected static final Map<Class<? extends SettingsScreen>,
+            Function<Screen, SettingsScreen>> screensSupplierList;
 
     static {
         screensSupplierList = new LinkedHashMap<>();
         screensSupplierList.put(MainSettingsScreen.class, MainSettingsScreen::new);
         screensSupplierList.put(ScreenshotSettingsScreen.class, ScreenshotSettingsScreen::new);
+        screensSupplierList.put(InfoSettingsScreen.class, InfoSettingsScreen::new);
     }
 
     protected final ResolutionControlMod mod = ResolutionControlMod.getInstance();
@@ -43,9 +45,6 @@ public class SettingsScreen extends Screen {
     protected int centerY;
     protected int startX;
     protected int startY;
-
-//    protected ButtonWidget mainSettingsButton;
-//    protected ButtonWidget screenshotSettingsButton;
 
     protected Map<Class<? extends SettingsScreen>, ButtonWidget> menuButtons;
 
@@ -71,13 +70,13 @@ public class SettingsScreen extends Screen {
         final int menuButtonHeight = 20;
         MutableInt o = new MutableInt();
 
-        screensSupplierList.forEach((c, supplier) -> {
-            SettingsScreen r = supplier.get();
+        screensSupplierList.forEach((c, constructor) -> {
+            SettingsScreen r = constructor.apply(this.parent);
             ButtonWidget b = new ButtonWidget(
                     startX - menuButtonWidth - 20, startY + o.getValue(),
                     menuButtonWidth, menuButtonHeight,
                     r.getTitle(),
-                    button -> client.openScreen(supplier.get())
+                    button -> client.openScreen(constructor.apply(this.parent))
             );
 
             if (this.getClass().equals(c))
@@ -95,7 +94,7 @@ public class SettingsScreen extends Screen {
                 new TranslatableText("gui.done"),
                 button -> {
                     applySettingsAndCleanup();
-                    client.openScreen(parent);
+                    client.openScreen(this.parent);
                 }
         );
         addButton(doneButton);
@@ -122,10 +121,10 @@ public class SettingsScreen extends Screen {
 
         super.render(matrices, mouseX, mouseY, delta);
 
-        drawLeftAlignedString(matrices, "\u00a7o" + getTitle().getString(),
+        drawLeftAlignedString(matrices, "\u00a7r" + getTitle().getString(),
                 centerX + 15, startY + 10, 0x000000);
 
-        drawRightAlignedString(matrices, settingsTitleText,
+        drawRightAlignedString(matrices, text("settings.title").getString(),
                 centerX + 5, startY + 10, 0x404040);
     }
 
@@ -166,6 +165,6 @@ public class SettingsScreen extends Screen {
     }
 
     public static SettingsScreen getScreen(Class<? extends SettingsScreen> screenClass) {
-        return screensSupplierList.get(screenClass).get();
+        return screensSupplierList.get(screenClass).apply(null);
     }
 }

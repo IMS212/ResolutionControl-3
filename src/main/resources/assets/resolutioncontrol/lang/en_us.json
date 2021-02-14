@@ -18,5 +18,9 @@
   "resolutioncontrol.settings.screenshot.overrideSize": "Use set size:",
   "resolutioncontrol.settings.screenshot.size": "Screenshot Size:",
 
+  "resolutioncontrol.settings.info": "Info",
+  "resolutioncontrol.settings.info.gpu": "GPU:",
+  "resolutioncontrol.settings.info.maxTextureSize": "Max Texture Size:",
+
   "resolutioncontrol.screenshot.wait": "Processing screenshot..."
 }

@@ -1,6 +1,5 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -33,10 +32,6 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         super(text("settings.screenshot"), parent);
     }
 
-    public ScreenshotSettingsScreen() {
-        this(MinecraftClient.getInstance().currentScreen);
-    }
-
     @Override
     protected void init() {
         super.init();
@@ -53,14 +48,14 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         addButton(toggleOverrideSizeButton);
 
         widthTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 35 - textFieldSize / 2, centerY ,
+                centerX - 45 - textFieldSize / 2, centerY ,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
         addButton(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
-                centerX - 25 + textFieldSize / 2, centerY ,
+                centerX - 45 + textFieldSize / 2, centerY ,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
@@ -87,12 +82,12 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
 
         drawLeftAlignedString(matrices,
                 "\u00a78" + text("settings.screenshot.overrideSize").getString(),
-                centerX - 65, centerY - 35,
+                centerX - 75, centerY - 35,
                 0x000000);
 
         drawLeftAlignedString(matrices,
                 "\u00a78" + text("settings.screenshot.size").getString(),
-                centerX - 65, centerY - 12,
+                centerX - 75, centerY - 12,
                 0x000000);
     }
 
