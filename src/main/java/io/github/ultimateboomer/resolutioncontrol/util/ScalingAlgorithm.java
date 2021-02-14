@@ -5,8 +5,8 @@ import net.minecraft.text.TranslatableText;
 import org.lwjgl.opengl.GL11;
 
 public enum ScalingAlgorithm {
-    NEAREST(new TranslatableText("resolutioncontrol.scaling.nearest"), GL11.GL_NEAREST),
-    LINEAR(new TranslatableText("resolutioncontrol.scaling.linear"), GL11.GL_LINEAR);
+    NEAREST(new TranslatableText("resolutioncontrol.settings.main.nearest"), GL11.GL_NEAREST),
+    LINEAR(new TranslatableText("resolutioncontrol.settings.main.linear"), GL11.GL_LINEAR);
 
     private Text text;
     private int id;

@@ -16,6 +16,8 @@ import java.util.List;
 public class SettingsScreen extends Screen {
     protected static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
+    protected static final String settingsTitleText = text("settings.title").getString();
+
     protected static Text text(String path, Object... args) {
         return new TranslatableText(ResolutionControlMod.MOD_ID + "." + path, args);
     }
@@ -56,7 +58,7 @@ public class SettingsScreen extends Screen {
 
         // Init menu buttons
         menuButtons = new ArrayList<>();
-        final int menuButtonWidth = 60;
+        final int menuButtonWidth = 80;
         final int menuButtonHeight = 20;
         int o = 0;
 
@@ -79,10 +81,13 @@ public class SettingsScreen extends Screen {
         menuButtons.forEach(this::addButton);
 
         doneButton = new ButtonWidget(
-                centerX - 15, startY + containerHeight - 30,
+                centerX + 15, startY + containerHeight - 30,
                 60, 20,
                 new TranslatableText("gui.done"),
-                button -> client.openScreen(parent)
+                button -> {
+                    applySettings();
+                    client.openScreen(parent);
+                }
         );
         addButton(doneButton);
     }
@@ -108,8 +113,34 @@ public class SettingsScreen extends Screen {
 
         super.render(matrices, mouseX, mouseY, delta);
 
-        drawCenteredString(matrices, getTitle().getString(), centerX, startY + 10, 0x404040);
+        drawLeftAlignedString(matrices, "\u00a7o" + getTitle().getString(),
+                centerX + 15, startY + 10, 0x000000);
+
+        drawRightAlignedString(matrices, settingsTitleText,
+                centerX + 5, startY + 10, 0x404040);
     }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if ((ResolutionControlMod.getInstance().getSettingsKey().matchesKey(keyCode, scanCode))) {
+            this.applySettings();
+            this.client.openScreen(this.parent);
+            this.client.mouse.lockCursor();
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+    }
+
+    @Override
+    public void onClose() {
+        this.applySettings();
+        super.onClose();
+    }
+
+    protected void applySettings() {
+        mod.saveSettings();
+    };
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     protected void drawCenteredString(MatrixStack matrices, String text, int x, int y, int color) {

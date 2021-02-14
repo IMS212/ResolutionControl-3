@@ -13,6 +13,7 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Window;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -87,6 +88,8 @@ public class ResolutionControlMod implements ModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (screenshotKey.wasPressed()) {
 				this.screenshot = true;
+				client.player.sendMessage(
+						new TranslatableText("resolutioncontrol.screenshot.wait"), false);
 			}
 		});
 	}
@@ -103,6 +106,7 @@ public class ResolutionControlMod implements ModInitializer {
 				true,
 				MinecraftClient.IS_SYSTEM_MAC
 			);
+			calculateSize();
 		}
 		
 		this.shouldScale = shouldScale;
@@ -258,12 +262,7 @@ public class ResolutionControlMod implements ModInitializer {
 		resize(framebuffer);
 		
 		resizeMinecraftFramebuffers();
-
-		currentWidth = framebuffer.textureWidth;
-		currentHeight = framebuffer.textureHeight;
-
-		// Framebuffer uses color (4 x 8 = 32 bit int) and depth (32 bit float)
-		estimatedMemory = (long) currentWidth * currentHeight * 8;
+		calculateSize();
 	}
 
 	public void resizeMinecraftFramebuffers() {
@@ -273,6 +272,14 @@ public class ResolutionControlMod implements ModInitializer {
 		resize(client.worldRenderer.getParticlesFramebuffer());
 		resize(client.worldRenderer.getWeatherFramebuffer());
 		resize(client.worldRenderer.getCloudsFramebuffer());
+	}
+
+	public void calculateSize() {
+		currentWidth = framebuffer.textureWidth;
+		currentHeight = framebuffer.textureHeight;
+
+		// Framebuffer uses color (4 x 8 = 32 bit int) and depth (32 bit float)
+		estimatedMemory = (long) currentWidth * currentHeight * 8;
 	}
 	
 	public void resize(@Nullable Framebuffer framebuffer) {
@@ -324,6 +331,10 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public boolean isScreenshotting() {
 		return screenshot;
+	}
+
+	public void saveSettings() {
+		ConfigHandler.instance.saveConfig();
 	}
 
 	public interface MutableMinecraftClient {

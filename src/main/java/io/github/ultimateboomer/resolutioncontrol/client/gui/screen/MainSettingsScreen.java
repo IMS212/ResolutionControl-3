@@ -25,6 +25,8 @@ public final class MainSettingsScreen extends SettingsScreen {
 
 	private static final double redValue = 2.0;
 
+	private static final Text increaseText = new LiteralText("+");
+	private static final Text decreaseText = new LiteralText("-");
 	private static final Text setText = new LiteralText("S");
 	private static final Text cancelText = new LiteralText("C");
 	
@@ -43,7 +45,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 	private boolean manualEntry = false;
 	
 	public MainSettingsScreen(@Nullable Screen parent) {
-		super(text("settings.main.title"), parent);
+		super(text("settings.main"), parent);
 	}
 	
 	public MainSettingsScreen() {
@@ -63,14 +65,14 @@ public final class MainSettingsScreen extends SettingsScreen {
 		decreaseButton = new ButtonWidget(
 			centerX - 55 - buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
-			new LiteralText("-"),
+			decreaseText,
 			button -> changeScaleFactor(false));
 		addButton(decreaseButton);
 		
 		increaseButton = new ButtonWidget(
 			centerX - 55 + buttonOffset - buttonSize / 2, buttonY,
 			buttonSize, buttonSize,
-				new LiteralText("+"),
+				increaseText,
 			button -> changeScaleFactor(true)
 		);
 		addButton(increaseButton);
@@ -139,10 +141,6 @@ public final class MainSettingsScreen extends SettingsScreen {
 			} else {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			}
-		} else if ((ResolutionControlMod.getInstance().getSettingsKey().matchesKey(keyCode, scanCode))) {
-			this.client.openScreen(null);
-			this.client.mouse.lockCursor();
-			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
@@ -161,16 +159,16 @@ public final class MainSettingsScreen extends SettingsScreen {
 				ResolutionControlMod.getInstance().getCurrentHeight()),
 				centerX - 55, centerY - 24, 0x000000);
 
-		drawCenteredString(matrices, "\u00a78" + text("scaling.estimate",
+		drawCenteredString(matrices, "\u00a78" + text("settings.main.estimate",
 				RCMathUtil.formatMetric(ResolutionControlMod.getInstance().getEstimatedMemory()) + "B")
 				.getString() + "\u00a7r",
 				centerX - 55, centerY - 12, 0x000000);
 
 		drawLeftAlignedString(matrices,
-				text("scaling.upscale").getString(),
+				"\u00a78" + text("settings.main.upscale").getString(),
 				centerX + 15, centerY - 40, 0x000000);
 		drawLeftAlignedString(matrices,
-				text("scaling.downscale").getString(),
+				"\u00a78" + text("settings.main.downscale").getString(),
 				centerX + 15, centerY - 5, 0x000000);
 
 

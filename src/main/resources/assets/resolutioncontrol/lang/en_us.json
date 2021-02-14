@@ -4,11 +4,18 @@
   "key.resolutioncontrol.settings": "Resolution Control Settings",
   "key.resolutioncontrol.screenshot": "Screenshot Framebuffer",
 
-  "resolutioncontrol.settings.title": "Resolution Control Settings",
+  "resolutioncontrol.settings.title": "Resolution Control",
 
-  "resolutioncontrol.scaling.upscale": "Upscale",
-  "resolutioncontrol.scaling.downscale": "Downscale",
-  "resolutioncontrol.scaling.linear": "Linear",
-  "resolutioncontrol.scaling.nearest": "Nearest",
-  "resolutioncontrol.scaling.estimate": "Est: %s"
+  "resolutioncontrol.settings.main": "Main",
+
+  "resolutioncontrol.settings.main.upscale": "Upscale",
+  "resolutioncontrol.settings.main.downscale": "Downscale",
+  "resolutioncontrol.settings.main.linear": "Linear",
+  "resolutioncontrol.settings.main.nearest": "Nearest",
+  "resolutioncontrol.settings.main.estimate": "Est: %s",
+
+  "resolutioncontrol.settings.screenshot": "Screenshots",
+  "resolutioncontrol.settings.screenshot.size": "Screenshot Size",
+
+  "resolutioncontrol.screenshot.wait": "Processing screenshot..."
 }
