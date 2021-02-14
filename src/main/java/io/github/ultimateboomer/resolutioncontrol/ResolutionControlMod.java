@@ -1,6 +1,7 @@
 package io.github.ultimateboomer.resolutioncontrol;
 
 import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.MainSettingsScreen;
+import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
 import io.github.ultimateboomer.resolutioncontrol.util.Config;
 import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
 import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
@@ -17,6 +18,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.CallbackI;
+
+import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
@@ -53,6 +57,8 @@ public class ResolutionControlMod implements ModInitializer {
 	@Nullable
 	private Framebuffer clientFramebuffer2;
 
+	private Class<? extends SettingsScreen> lastSettingsScreen = MainSettingsScreen.class;
+
 	private int currentWidth;
 	private int currentHeight;
 
@@ -81,7 +87,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (settingsKey.wasPressed()) {
-				client.openScreen(new MainSettingsScreen());
+				client.openScreen(SettingsScreen.getScreen(lastSettingsScreen));
 			}
 		});
 
@@ -232,7 +238,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public boolean getUsingIndependentScreenshotScale() {
-		return Config.getInstance().independentScreenshotScale;
+		return Config.getInstance().overrideScreenshotScale;
 	}
 
 	public int getScreenshotWidth() {
@@ -335,6 +341,10 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public void saveSettings() {
 		ConfigHandler.instance.saveConfig();
+	}
+
+	public void setLastSettingsScreen(Class<? extends SettingsScreen> ordinal) {
+		this.lastSettingsScreen = ordinal;
 	}
 
 	public interface MutableMinecraftClient {

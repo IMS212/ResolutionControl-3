@@ -40,8 +40,6 @@ public final class MainSettingsScreen extends SettingsScreen {
 	private ButtonWidget upscaleAlgoButton;
 	private ButtonWidget downscaleAlgoButton;
 
-//	private ButtonWidget doneButton;
-
 	private boolean manualEntry = false;
 	
 	public MainSettingsScreen(@Nullable Screen parent) {
@@ -55,7 +53,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 	@Override
 	protected void init() {
 		super.init();
-		mainSettingsButton.active = false;
+		menuButtons.get(0).active = false;
 		
 		int buttonSize = 20;
 		int buttonOffset = buttonSize / 2;

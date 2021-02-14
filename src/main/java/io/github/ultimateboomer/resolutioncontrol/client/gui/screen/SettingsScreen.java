@@ -11,7 +11,10 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class SettingsScreen extends Screen {
     protected static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
@@ -25,6 +28,14 @@ public class SettingsScreen extends Screen {
     protected static final int containerWidth = 192;
     protected static final int containerHeight = 128;
 
+    protected static final Map<Class<? extends SettingsScreen>, Supplier<SettingsScreen>> screensSupplierList;
+
+    static {
+        screensSupplierList = new LinkedHashMap<>();
+        screensSupplierList.put(MainSettingsScreen.class, MainSettingsScreen::new);
+        screensSupplierList.put(ScreenshotSettingsScreen.class, ScreenshotSettingsScreen::new);
+    }
+
     protected final ResolutionControlMod mod = ResolutionControlMod.getInstance();
 
     @Nullable
@@ -35,8 +46,8 @@ public class SettingsScreen extends Screen {
     protected int startX;
     protected int startY;
 
-    protected ButtonWidget mainSettingsButton;
-    protected ButtonWidget screenshotSettingsButton;
+//    protected ButtonWidget mainSettingsButton;
+//    protected ButtonWidget screenshotSettingsButton;
 
     protected List<ButtonWidget> menuButtons;
 
@@ -62,21 +73,17 @@ public class SettingsScreen extends Screen {
         final int menuButtonHeight = 20;
         int o = 0;
 
-        this.mainSettingsButton = new ButtonWidget(
-                startX - menuButtonWidth - 20, startY + o,
-                menuButtonWidth, menuButtonHeight,
-                text("settings.main"),
-                button -> client.openScreen(new MainSettingsScreen(this.parent)));
-        menuButtons.add(mainSettingsButton);
-        o += 25;
-
-        this.screenshotSettingsButton = new ButtonWidget(
-                startX - menuButtonWidth - 20, startY + o,
-                menuButtonWidth, menuButtonHeight,
-                text("settings.screenshot"),
-                button -> client.openScreen(new ScreenshotSettingsButton(this.parent)));
-        menuButtons.add(screenshotSettingsButton);
-        o += 25;
+        for (Supplier<SettingsScreen> screenSupplier : screensSupplierList.values()) {
+            SettingsScreen r = screenSupplier.get();
+            ButtonWidget b = new ButtonWidget(
+                    startX - menuButtonWidth - 20, startY + o,
+                    menuButtonWidth, menuButtonHeight,
+                    r.getTitle(),
+                    button -> client.openScreen(screenSupplier.get())
+            );
+            menuButtons.add(b);
+            o += 25;
+        }
 
         menuButtons.forEach(this::addButton);
 
@@ -85,7 +92,7 @@ public class SettingsScreen extends Screen {
                 60, 20,
                 new TranslatableText("gui.done"),
                 button -> {
-                    applySettings();
+                    applySettingsAndCleanup();
                     client.openScreen(parent);
                 }
         );
@@ -123,7 +130,7 @@ public class SettingsScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if ((ResolutionControlMod.getInstance().getSettingsKey().matchesKey(keyCode, scanCode))) {
-            this.applySettings();
+            this.applySettingsAndCleanup();
             this.client.openScreen(this.parent);
             this.client.mouse.lockCursor();
             return true;
@@ -134,12 +141,13 @@ public class SettingsScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.applySettings();
+        this.applySettingsAndCleanup();
         super.onClose();
     }
 
-    protected void applySettings() {
+    protected void applySettingsAndCleanup() {
         mod.saveSettings();
+        mod.setLastSettingsScreen(this.getClass());
     };
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
@@ -153,5 +161,9 @@ public class SettingsScreen extends Screen {
 
     protected void drawRightAlignedString(MatrixStack matrices, String text, int x, int y, int color) {
         textRenderer.draw(matrices, text, x - textRenderer.getWidth(text), y, color);
+    }
+
+    public static SettingsScreen getScreen(Class<? extends SettingsScreen> screenClass) {
+        return screensSupplierList.get(screenClass).get();
     }
 }

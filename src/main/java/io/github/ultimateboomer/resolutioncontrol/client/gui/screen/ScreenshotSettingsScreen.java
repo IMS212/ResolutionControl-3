@@ -1,5 +1,6 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -9,12 +10,12 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class ScreenshotSettingsButton extends SettingsScreen {
+public class ScreenshotSettingsScreen extends SettingsScreen {
     private static final double[] scaleValues = {0.1, 0.25, 0.5, 1.0,
             2.0, 3.0, 4.0, 6.0, 8.0, 16.0};
 
-    private static final Text increaseText = new LiteralText("+");
-    private static final Text decreaseText = new LiteralText("-");
+    private static final Text increaseText = new LiteralText("x2");
+    private static final Text decreaseText = new LiteralText("/2");
 
     private TextFieldWidget widthTextField;
     private TextFieldWidget heightTextField;
@@ -22,17 +23,23 @@ public class ScreenshotSettingsButton extends SettingsScreen {
     private ButtonWidget increaseButton;
     private ButtonWidget decreaseButton;
 
+    private ButtonWidget toggleOverrideSizeButton;
+
     private final int buttonSize = 20;
     private final int textFieldSize = 60;
 
-    protected ScreenshotSettingsButton(@Nullable Screen parent) {
+    public ScreenshotSettingsScreen(@Nullable Screen parent) {
         super(text("settings.screenshot"), parent);
+    }
+
+    public ScreenshotSettingsScreen() {
+        this(MinecraftClient.getInstance().currentScreen);
     }
 
     @Override
     protected void init() {
         super.init();
-        screenshotSettingsButton.active = false;
+        menuButtons.get(1).active = false;
 
 
         widthTextField = new TextFieldWidget(client.textRenderer,
@@ -82,13 +89,13 @@ public class ScreenshotSettingsButton extends SettingsScreen {
     }
 
     @Override
-    protected void applySettings() {
+    protected void applySettingsAndCleanup() {
         if (NumberUtils.isParsable(widthTextField.getText())
                 && NumberUtils.isParsable(heightTextField.getText())) {
             mod.setScreenshotWidth((int) Double.parseDouble(widthTextField.getText()));
             mod.setScreenshotHeight((int) Double.parseDouble(heightTextField.getText()));
         }
-        super.applySettings();
+        super.applySettingsAndCleanup();
     }
 
     private void multiply(double mul) {
