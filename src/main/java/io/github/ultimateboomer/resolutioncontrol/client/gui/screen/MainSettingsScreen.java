@@ -142,19 +142,21 @@ public final class MainSettingsScreen extends SettingsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float time) {
 		super.render(matrices, mouseX, mouseY, time);
 
-		drawCenteredString(matrices, String.format("\u00a7%s%s\u00a7rx",
-				mod.getScaleFactor() > redValue ? "4" : "0", mod.getScaleFactor()),
-				centerX - 55, centerY - 36, 0x000000);
+		if (!this.manualEntry) {
+			drawCenteredString(matrices, String.format("\u00a7%s%s\u00a7rx",
+					mod.getScaleFactor() > redValue ? "4" : "0", mod.getScaleFactor()),
+					centerX - 55, centerY - 36, 0x000000);
 
-		drawCenteredString(matrices, String.format("\u00a78%sx%s\u00a7r",
-				ResolutionControlMod.getInstance().getCurrentWidth(),
-				ResolutionControlMod.getInstance().getCurrentHeight()),
-				centerX - 55, centerY - 24, 0x000000);
+			drawCenteredString(matrices, String.format("\u00a78%sx%s\u00a7r",
+					ResolutionControlMod.getInstance().getCurrentWidth(),
+					ResolutionControlMod.getInstance().getCurrentHeight()),
+					centerX - 55, centerY - 24, 0x000000);
 
-		drawCenteredString(matrices, "\u00a78" + text("settings.main.estimate",
-				RCUtil.formatMetric(ResolutionControlMod.getInstance().getEstimatedMemory()) + "B")
-				.getString() + "\u00a7r",
-				centerX - 55, centerY - 12, 0x000000);
+			drawCenteredString(matrices, "\u00a78" + text("settings.main.estimate",
+					RCUtil.formatMetric(ResolutionControlMod.getInstance().getEstimatedMemory()) + "B")
+							.getString() + "\u00a7r",
+					centerX - 55, centerY - 12, 0x000000);
+		}
 
 		drawLeftAlignedString(matrices,
 				"\u00a78" + text("settings.main.upscale").getString(),
@@ -190,9 +192,9 @@ public final class MainSettingsScreen extends SettingsScreen {
 		double currentScale = mod.getScaleFactor();
 		int nextIndex = ArrayUtils.indexOf(scaleValues, currentScale);
 		if (nextIndex == -1) {
-			for (int i = -1; i <= scaleValues.length; ++i) {
+			for (int i = -1; i < scaleValues.length; ++i) {
 				double scale1 = i == -1 ? 0.0 : scaleValues[i];
-				double scale2 = i == scaleValues.length ? Double.POSITIVE_INFINITY : scaleValues[i + 1];
+				double scale2 = i == scaleValues.length - 1 ? Double.POSITIVE_INFINITY : scaleValues[i + 1];
 
 				if (currentScale > scale1 && currentScale < scale2) {
 					nextIndex = i + (add ? 1 : 0);
@@ -231,7 +233,6 @@ public final class MainSettingsScreen extends SettingsScreen {
 				if (NumberUtils.isParsable(text)) {
 					double value = Double.parseDouble(text);
 					mod.setScaleFactor(value);
-					updateButtons();
 				}
 			}
 
@@ -240,6 +241,8 @@ public final class MainSettingsScreen extends SettingsScreen {
 			cancelButton.active = false;
 			increaseButton.active = true;
 			decreaseButton.active = true;
+
+			updateButtons();
 		}
 	}
 }
