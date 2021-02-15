@@ -30,7 +30,7 @@ ResolutionControl+ can be used to take larger than native resolution screenshots
 To do this, use the `Screenshot Framebuffer` keybind which is unbound by default.
 
 Compared to *Fabrishot*, this implementation does not lock up the game until the screenshot is saved.
-This makes taking large screenshots is much faster.
+This makes taking large screenshots much faster.
 And while a screenshot is being processed, you can take another one without any problems.
 
 Here is the time it takes to take a 16k screenshot, on an i7 4770 and GTX 1060:
