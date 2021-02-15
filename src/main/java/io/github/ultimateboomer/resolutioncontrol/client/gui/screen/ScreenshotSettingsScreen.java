@@ -144,8 +144,8 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     protected void applySettingsAndCleanup() {
         if (NumberUtils.isParsable(widthTextField.getText())
                 && NumberUtils.isParsable(heightTextField.getText())) {
-            int newWidth = (int) Double.parseDouble(widthTextField.getText());
-            int newHeight = (int) Double.parseDouble(heightTextField.getText());
+            int newWidth = (int) Math.abs(Double.parseDouble(widthTextField.getText()));
+            int newHeight = (int) Math.abs(Double.parseDouble(heightTextField.getText()));
 
             if (newWidth != mod.getScreenshotWidth() || newHeight != mod.getScreenshotHeight()) {
                 mod.setScreenshotWidth(newWidth);
@@ -162,8 +162,10 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     private void multiply(double mul) {
         if (NumberUtils.isParsable(widthTextField.getText())
                 && NumberUtils.isParsable(heightTextField.getText())) {
-            widthTextField.setText(String.valueOf((int) (Double.parseDouble(widthTextField.getText()) * mul)));
-            heightTextField.setText(String.valueOf((int) (Double.parseDouble(heightTextField.getText()) * mul)));
+            widthTextField.setText(String.valueOf(
+                    (int) Math.abs(Double.parseDouble(widthTextField.getText()) * mul)));
+            heightTextField.setText(String.valueOf(
+                    (int) Math.abs(Double.parseDouble(heightTextField.getText()) * mul)));
             calculateSize();
         }
     }
@@ -176,7 +178,10 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     }
 
     private void calculateSize() {
-        estimatedSize = (long) (Double.parseDouble(widthTextField.getText())
-                        * Double.parseDouble(heightTextField.getText()) * 8);
+        if (NumberUtils.isParsable(widthTextField.getText())
+                && NumberUtils.isParsable(heightTextField.getText())) {
+            estimatedSize = (long) (Double.parseDouble(widthTextField.getText())
+                    * Double.parseDouble(heightTextField.getText()) * 8);
+        }
     }
 }

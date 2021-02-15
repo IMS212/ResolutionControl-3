@@ -231,7 +231,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 			if (!cancel) {
 				String text = entryTextField.getText();
 				if (NumberUtils.isParsable(text)) {
-					double value = Double.parseDouble(text);
+					double value = Math.abs(Double.parseDouble(text));
 					mod.setScaleFactor(value);
 				}
 			}
