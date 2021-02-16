@@ -1,3 +1,0 @@
-accessWidener v1 named
-
-accessible method net/minecraft/client/util/ScreenshotUtils getScreenshotFilename (Ljava/io/File;)Ljava/io/File;
