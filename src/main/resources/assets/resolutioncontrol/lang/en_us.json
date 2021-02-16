@@ -8,14 +8,14 @@
 
   "resolutioncontrol.settings.main": "Main",
 
-  "resolutioncontrol.settings.main.upscale": "Upscale:",
-  "resolutioncontrol.settings.main.downscale": "Downscale:",
+  "resolutioncontrol.settings.main.upscale": "Hi-res filter:",
+  "resolutioncontrol.settings.main.downscale": "Lo-res filter:",
   "resolutioncontrol.settings.main.linear": "Linear",
   "resolutioncontrol.settings.main.nearest": "Nearest",
   "resolutioncontrol.settings.main.estimate": "Est: %s",
 
   "resolutioncontrol.settings.screenshot": "Screenshots",
-  "resolutioncontrol.settings.screenshot.overrideSize": "Use set size:",
+  "resolutioncontrol.settings.screenshot.overrideSize": "Use Set Size:",
   "resolutioncontrol.settings.screenshot.alwaysAllocated": "Always Allocated:",
   "resolutioncontrol.settings.screenshot.size": "Size:",
 
