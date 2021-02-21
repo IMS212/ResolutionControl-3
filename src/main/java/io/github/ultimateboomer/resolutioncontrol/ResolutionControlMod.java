@@ -104,7 +104,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 	private void saveScreenshot(Framebuffer fb) {
 		ScreenshotUtils.saveScreenshot(client.runDirectory,
-				SCREENSHOT_PREFIX + RCUtil.getScreenshotFilename(null),
+				RCUtil.getScreenshotFilename(client.runDirectory).toString(),
 				fb.textureWidth, fb.textureHeight, fb,
 				text -> client.player.sendMessage(text, false));
 	}
@@ -309,7 +309,6 @@ public class ResolutionControlMod implements ModInitializer {
 		updateFramebufferSize();
 	}
 	
-	@SuppressWarnings("ConstantConditions")
 	private void updateFramebufferSize() {
 		if (framebuffer == null) return;
 

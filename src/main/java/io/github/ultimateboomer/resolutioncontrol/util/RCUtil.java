@@ -34,10 +34,11 @@ public final class RCUtil {
         int i = 1;
 
         while (true) {
-            File file = new File(directory, string + (i == 1 ? "" : "_" + i) + ".png");
-            if (!file.exists()) {
+            File file = new File(new File(""), "fb" + string + (i == 1 ? "" : "_" + i) + ".png");
+            File entireDirectory = new File(new File(directory, "screenshots"), file.toString());
+            if (!entireDirectory.exists()) {
                 try {
-                    file.createNewFile();
+                    entireDirectory.createNewFile();
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }
