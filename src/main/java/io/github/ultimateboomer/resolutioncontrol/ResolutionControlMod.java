@@ -9,6 +9,7 @@ import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.options.KeyBinding;
@@ -38,6 +39,8 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	private static final String SCREENSHOT_PREFIX = "fb";
+
+	private boolean optifineInstalled;
 	
 	private KeyBinding settingsKey;
 	private KeyBinding screenshotKey;
@@ -95,6 +98,8 @@ public class ResolutionControlMod implements ModInitializer {
 				}
 			}
 		});
+
+		optifineInstalled = FabricLoader.getInstance().isModLoaded("optifabric");
 	}
 
 	private void saveScreenshot(Framebuffer fb) {
@@ -380,6 +385,10 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public boolean isScreenshotting() {
 		return screenshot;
+	}
+
+	public boolean isOptifineInstalled() {
+		return optifineInstalled;
 	}
 
 	public void saveSettings() {

@@ -20,7 +20,11 @@ public abstract class WindowMixin {
 	@Inject(at = @At("RETURN"), method = "getFramebufferWidth", cancellable = true)
 	private void getFramebufferWidth(CallbackInfoReturnable<Integer> ci) {
 		if (getRCMod().isScreenshotting()) {
-			ci.setReturnValue(getRCMod().getScreenshotWidth() * this.framebufferHeight / getRCMod().getScreenshotHeight());
+			if (getRCMod().isOptifineInstalled()) {
+				ci.setReturnValue(getRCMod().getScreenshotWidth());
+			} else {
+				ci.setReturnValue(getRCMod().getScreenshotWidth() * this.framebufferHeight / getRCMod().getScreenshotHeight());
+			}
 		} else {
 			ci.setReturnValue(scale(ci.getReturnValueI()));
 		}
@@ -29,7 +33,11 @@ public abstract class WindowMixin {
 	@Inject(at = @At("RETURN"), method = "getFramebufferHeight", cancellable = true)
 	private void getFramebufferHeight(CallbackInfoReturnable<Integer> ci) {
 		if (getRCMod().isScreenshotting()) {
-			ci.setReturnValue(getRCMod().getScreenshotHeight() * this.framebufferHeight / getRCMod().getScreenshotHeight());
+			if (getRCMod().isOptifineInstalled()) {
+				ci.setReturnValue(getRCMod().getScreenshotHeight());
+			} else {
+				ci.setReturnValue(this.framebufferHeight);
+			}
 		} else {
 			ci.setReturnValue(scale(ci.getReturnValueI()));
 		}
