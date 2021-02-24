@@ -1,22 +1,17 @@
 package io.github.ultimateboomer.resolutioncontrol.mixin;
 
+import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 
 @Mixin(Window.class)
 public abstract class WindowMixin {
-	@Shadow private int framebufferWidth;
-
-	@Shadow private int framebufferHeight;
-
 	@Inject(at = @At("RETURN"), method = "getFramebufferWidth", cancellable = true)
 	private void getFramebufferWidth(CallbackInfoReturnable<Integer> ci) {
 		if (getRCMod().isScreenshotting()) {

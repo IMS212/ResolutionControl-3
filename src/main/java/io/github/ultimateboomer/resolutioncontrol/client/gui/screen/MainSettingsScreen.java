@@ -27,12 +27,13 @@ public final class MainSettingsScreen extends SettingsScreen {
 	private static final Text increaseText = new LiteralText("+");
 	private static final Text decreaseText = new LiteralText("-");
 	private static final Text setText = new LiteralText("S");
+	private static final Text resetText = new LiteralText("R");
 	private static final Text cancelText = new LiteralText("C");
 	
 	private ButtonWidget increaseButton;
 	private ButtonWidget decreaseButton;
 	private ButtonWidget setButton;
-	private ButtonWidget cancelButton;
+	private ButtonWidget cancelOrResetButton;
 
 	private TextFieldWidget entryTextField;
 
@@ -79,16 +80,20 @@ public final class MainSettingsScreen extends SettingsScreen {
 		);
 		addButton(setButton);
 
-		cancelButton = new ButtonWidget(
+		cancelOrResetButton = new ButtonWidget(
 				centerX - 55 - buttonOffset + buttonSize / 2, buttonY + buttonSize,
 				buttonSize, buttonSize,
-				cancelText,
+				resetText,
 				button -> {
-					setManualEntry(false, true);
+					if (manualEntry) {
+						setManualEntry(false, true);
+					} else {
+						mod.setScaleFactor(1.0);
+						updateButtons();
+					}
 				}
 		);
-		cancelButton.active = false;
-		addButton(cancelButton);
+		addButton(cancelOrResetButton);
 
 		entryTextField = new TextFieldWidget(client.textRenderer,
 				centerX - 55 - textFieldSize / 2, centerY - 36,
@@ -223,7 +228,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 			entryTextField.setSelectionStart(0);
 			entryTextField.setSelectionEnd(entryTextField.getText().length());
 			entryTextField.active = true;
-			cancelButton.active = true;
+			cancelOrResetButton.setMessage(cancelText);
 			increaseButton.active = false;
 			decreaseButton.active = false;
 			this.focusOn(entryTextField);
@@ -238,7 +243,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 
 			entryTextField.setVisible(false);
 			setButton.setMessage(setText);
-			cancelButton.active = false;
+			cancelOrResetButton.setMessage(resetText);
 			increaseButton.active = true;
 			decreaseButton.active = true;
 
