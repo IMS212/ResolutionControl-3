@@ -158,9 +158,9 @@ public class ResolutionControlMod implements ModInitializer {
 
 			// Screenshot framebuffer
 			if (screenshot) {
-				screenshotFrameBuffer.draw(
-						window.getFramebufferWidth(), window.getFramebufferHeight()
-				);
+//				clientFramebuffer.draw(
+//						window.getFramebufferWidth(), window.getFramebufferHeight()
+//				);
 
 				saveScreenshot(screenshotFrameBuffer);
 
