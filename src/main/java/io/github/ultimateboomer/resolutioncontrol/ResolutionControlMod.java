@@ -395,7 +395,29 @@ public class ResolutionControlMod implements ModInitializer {
 	public void resizeMinecraftFramebuffers() {
 		initMinecraftFramebuffers();
 
-		minecraftFramebuffers.forEach(this::resize);
+		if (getEnableFastDynamicResolution()) {
+			client.worldRenderer.entityOutlinesFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.entityOutlinesFramebuffer);
+			client.worldRenderer.translucentFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.translucentFramebuffer);
+			client.worldRenderer.entityFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.entityFramebuffer);
+			client.worldRenderer.particlesFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.particlesFramebuffer);
+			client.worldRenderer.weatherFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.weatherFramebuffer);
+			client.worldRenderer.cloudsFramebuffer
+					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
+							client.worldRenderer.cloudsFramebuffer);
+		} else {
+			minecraftFramebuffers.forEach(this::resize);
+		}
+
 	}
 
 	public void calculateSize() {
@@ -418,11 +440,19 @@ public class ResolutionControlMod implements ModInitializer {
 					MinecraftClient.IS_SYSTEM_MAC
 			);
 		} else {
-			framebuffer.resize(
-					getWindow().getFramebufferWidth(),
-					getWindow().getFramebufferHeight(),
-					MinecraftClient.IS_SYSTEM_MAC
-			);
+			if (getEnableFastDynamicResolution()) {
+				framebuffer.resize(
+						getWindow().getWidth(),
+						getWindow().getHeight(),
+						MinecraftClient.IS_SYSTEM_MAC
+				);
+			} else {
+				framebuffer.resize(
+						getWindow().getFramebufferWidth(),
+						getWindow().getFramebufferHeight(),
+						MinecraftClient.IS_SYSTEM_MAC
+				);
+			}
 		}
 		shouldScale = prev;
 	}
@@ -432,7 +462,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 	
 	private void setClientFramebuffer(Framebuffer framebuffer) {
-		((MutableMinecraftClient) client).setFramebuffer(framebuffer);
+		client.framebuffer = framebuffer;
 	}
 
 	public KeyBinding getSettingsKey() {
@@ -467,9 +497,4 @@ public class ResolutionControlMod implements ModInitializer {
 		this.lastSettingsScreen = ordinal;
 	}
 
-	public interface MutableMinecraftClient {
-		void setFramebuffer(Framebuffer framebuffer);
-
-		int getFps();
-	}
 }

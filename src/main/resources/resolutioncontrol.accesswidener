@@ -1,0 +1,14 @@
+accessWidener v1 named
+
+accessible field net/minecraft/client/MinecraftClient framebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/MinecraftClient currentFps I
+
+mutable field net/minecraft/client/MinecraftClient framebuffer Lnet/minecraft/client/gl/Framebuffer;
+
+accessible field net/minecraft/client/render/WorldRenderer entityOutlinesFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/render/WorldRenderer translucentFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/render/WorldRenderer entityFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/render/WorldRenderer particlesFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/render/WorldRenderer weatherFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+accessible field net/minecraft/client/render/WorldRenderer cloudsFramebuffer Lnet/minecraft/client/gl/Framebuffer;
+

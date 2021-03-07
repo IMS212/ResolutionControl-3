@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.text.LiteralText;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,17 +46,24 @@ public class DynamicResolutionHandler {
     private void update() {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        int fps = ((ResolutionControlMod.MutableMinecraftClient) client).getFps();
+        int fps = MinecraftClient.currentFps;
 
-        if (fps > 130) {
-            currentScale = Math.min(currentScale + 1, scales.size() - 1);
-            ResolutionControlMod.getInstance().updateFramebufferSize();
-        } else if (fps < 110) {
-            currentScale = Math.max(currentScale - 1, 0);
-            ResolutionControlMod.getInstance().updateFramebufferSize();
+        if (fps > 80) {
+            setCurrentScale(Math.min(currentScale + 1, scales.size() - 1));
+        } else if (fps < 60) {
+            setCurrentScale(Math.max(currentScale - 1, 0));
         }
+    }
 
-        System.out.println("Res: " + getCurrentScale());
+    private void setCurrentScale(int currentScale) {
+        boolean equal = this.currentScale == currentScale;
+        this.currentScale = currentScale;
+
+        if (!equal) {
+            ResolutionControlMod.getInstance().updateFramebufferSize();
+            MinecraftClient.getInstance().player.sendMessage(
+                    new LiteralText("Res: " + getCurrentScale()), false);
+        }
     }
 
     public double getCurrentScale() {
