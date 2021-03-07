@@ -13,6 +13,9 @@ public final class Config {
 
 	public boolean screenshotFramebufferAlwaysAllocated = false;
 
+	public boolean enableDynamicResolution = false;
+	public boolean fastDynamicResolution = false;
+
 	public static Config getInstance() {
 		return ConfigHandler.instance.getConfig();
 	}

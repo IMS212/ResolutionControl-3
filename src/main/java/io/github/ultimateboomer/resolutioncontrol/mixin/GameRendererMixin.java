@@ -18,4 +18,6 @@ public abstract class GameRendererMixin {
 	private void onRenderWorldEnd(CallbackInfo callbackInfo) {
 		ResolutionControlMod.getInstance().setShouldScale(false);
 	}
+
+
 }

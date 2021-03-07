@@ -17,7 +17,9 @@ public abstract class MinecraftClientMixin implements ResolutionControlMod.Mutab
 	@Final
 	@Shadow
 	private Framebuffer framebuffer;
-	
+
+	@Shadow private static int currentFps;
+
 	@Override
 	public void setFramebuffer(Framebuffer framebuffer) {
 		this.framebuffer = framebuffer;
@@ -29,5 +31,10 @@ public abstract class MinecraftClientMixin implements ResolutionControlMod.Mutab
 		if (mod.isScreenshotFramebufferAlwaysAllocated()) {
 			mod.initScreenshotFramebuffer();
 		}
+	}
+
+	@Override
+	public int getFps() {
+		return currentFps;
 	}
 }

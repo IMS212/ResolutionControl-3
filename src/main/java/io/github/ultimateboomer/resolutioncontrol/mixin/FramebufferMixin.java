@@ -2,7 +2,7 @@ package io.github.ultimateboomer.resolutioncontrol.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
-import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -21,8 +21,16 @@ import java.nio.IntBuffer;
 @Mixin(Framebuffer.class)
 public abstract class FramebufferMixin {
     @Unique private boolean isMipmapped;
+    @Unique private float scaleMultiplier;
 
     @Shadow public abstract int getColorAttachment();
+
+    @Inject(method = "initFbo", at = @At("HEAD"))
+    private void onInitFbo(int width, int height, boolean getError, CallbackInfo ci) {
+        scaleMultiplier = (float) width / MinecraftClient.getInstance().getWindow().getWidth();
+        isMipmapped = scaleMultiplier > 2.0f;
+    }
+
 
     @Redirect(method = "*", at = @At(value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;texParameter(III)V"))
@@ -32,7 +40,7 @@ public abstract class FramebufferMixin {
                     ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId(isMipmapped));
         } else if (pname == GL11.GL_TEXTURE_MAG_FILTER) {
             GlStateManager.texParameter(target, pname,
-                    ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId(isMipmapped));
+                    ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId(false));
         } else if (pname == GL11.GL_TEXTURE_WRAP_S || pname == GL11.GL_TEXTURE_WRAP_T) {
             // Fix linear scaling creating black borders
             GlStateManager.texParameter(target, pname, GL12.GL_CLAMP_TO_EDGE);
@@ -45,17 +53,15 @@ public abstract class FramebufferMixin {
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"))
     private void onTexImage(int target, int level, int internalFormat, int width, int height, int border, int format,
                             int type, IntBuffer pixels) {
-        if (ConfigHandler.instance.getConfig().scaleFactor > 2.0) {
-            int mipmapLevel = MathHelper.ceil(Math.log(ConfigHandler.instance.getConfig().scaleFactor)
-                    / Math.log(2));
+        if (isMipmapped) {
+            int mipmapLevel = MathHelper.ceil(Math.log(scaleMultiplier) / Math.log(2));
             for (int i = 0; i < mipmapLevel; i++) {
-                GlStateManager.texImage2D(target, 0, internalFormat, width, height, border, format, type, pixels);
+                GlStateManager.texImage2D(target, i, internalFormat,
+                       width << i, height << i,
+                        border, format, type, pixels);
             }
-
-            isMipmapped = true;
         } else {
             GlStateManager.texImage2D(target, 0, internalFormat, width, height, border, format, type, pixels);
-            isMipmapped = false;
         }
 
     }

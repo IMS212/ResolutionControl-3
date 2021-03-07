@@ -2,10 +2,7 @@ package io.github.ultimateboomer.resolutioncontrol;
 
 import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.MainSettingsScreen;
 import io.github.ultimateboomer.resolutioncontrol.client.gui.screen.SettingsScreen;
-import io.github.ultimateboomer.resolutioncontrol.util.Config;
-import io.github.ultimateboomer.resolutioncontrol.util.ConfigHandler;
-import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
-import io.github.ultimateboomer.resolutioncontrol.util.ScalingAlgorithm;
+import io.github.ultimateboomer.resolutioncontrol.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -21,7 +18,9 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
@@ -55,6 +54,10 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
+
+	private Set<Framebuffer> scaledFramebuffers;
+
+	private Set<Framebuffer> minecraftFramebuffers;
 
 	private Class<? extends SettingsScreen> lastSettingsScreen = MainSettingsScreen.class;
 
@@ -99,6 +102,12 @@ public class ResolutionControlMod implements ModInitializer {
 			}
 		});
 
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null) {
+				DynamicResolutionHandler.INSTANCE.tick();
+			}
+		});
+
 		optifineInstalled = FabricLoader.getInstance().isModLoaded("optifabric");
 	}
 
@@ -116,12 +125,22 @@ public class ResolutionControlMod implements ModInitializer {
 		if (framebuffer == null) {
 			this.shouldScale = true; // so we get the right dimensions
 			framebuffer = new Framebuffer(
-				window.getFramebufferWidth(),
-				window.getFramebufferHeight(),
-				true,
-				MinecraftClient.IS_SYSTEM_MAC
+					window.getFramebufferWidth(),
+					window.getFramebufferHeight(),
+					true,
+					MinecraftClient.IS_SYSTEM_MAC
 			);
 			calculateSize();
+		}
+
+		if (getEnableFastDynamicResolution()) {
+			if (DynamicResolutionHandler.INSTANCE.isFramebufferMapEmpty()) {
+				initScaledFramebuffers();
+
+				DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
+						getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
+			}
+
 		}
 		
 		this.shouldScale = shouldScale;
@@ -147,9 +166,9 @@ public class ResolutionControlMod implements ModInitializer {
 
 				screenshotFrameBuffer.beginWrite(true);
 			} else {
-				setClientFramebuffer(framebuffer);
+				setClientFramebuffer(getFramebuffer());
 
-				framebuffer.beginWrite(true);
+				getFramebuffer().beginWrite(true);
 			}
 			// nothing on the client's framebuffer yet
 		} else {
@@ -158,10 +177,6 @@ public class ResolutionControlMod implements ModInitializer {
 
 			// Screenshot framebuffer
 			if (screenshot) {
-//				clientFramebuffer.draw(
-//						window.getFramebufferWidth(), window.getFramebufferHeight()
-//				);
-
 				saveScreenshot(screenshotFrameBuffer);
 
 				if (!isScreenshotFramebufferAlwaysAllocated()) {
@@ -172,7 +187,7 @@ public class ResolutionControlMod implements ModInitializer {
 				screenshot = false;
 				resizeMinecraftFramebuffers();
 			} else {
-				framebuffer.draw(
+				getFramebuffer().draw(
 						window.getFramebufferWidth(),
 						window.getFramebufferHeight()
 				);
@@ -180,6 +195,48 @@ public class ResolutionControlMod implements ModInitializer {
 		}
 		
 		client.getProfiler().swap("level");
+	}
+
+	private void initScaledFramebuffers() {
+		if (scaledFramebuffers != null) {
+			scaledFramebuffers.clear();
+		} else {
+			scaledFramebuffers = new HashSet<>();
+		}
+
+		scaledFramebuffers.add(framebuffer);
+		initMinecraftFramebuffers();
+		scaledFramebuffers.addAll(minecraftFramebuffers);
+		scaledFramebuffers.remove(null);
+	}
+
+	private void initMinecraftFramebuffers() {
+		if (minecraftFramebuffers != null) {
+			minecraftFramebuffers.clear();
+		} else {
+			minecraftFramebuffers = new HashSet<>();
+		}
+
+		minecraftFramebuffers.add(client.worldRenderer.getEntityOutlinesFramebuffer());
+		minecraftFramebuffers.add(client.worldRenderer.getTranslucentFramebuffer());
+		minecraftFramebuffers.add(client.worldRenderer.getEntityFramebuffer());
+		minecraftFramebuffers.add(client.worldRenderer.getParticlesFramebuffer());
+		minecraftFramebuffers.add(client.worldRenderer.getWeatherFramebuffer());
+		minecraftFramebuffers.add(client.worldRenderer.getCloudsFramebuffer());
+		minecraftFramebuffers.remove(null);
+	}
+
+	public Framebuffer getFramebuffer() {
+		if (getEnableFastDynamicResolution()) {
+			if (DynamicResolutionHandler.INSTANCE.isFramebufferMapEmpty()) {
+				DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
+						getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
+			}
+
+			return DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(framebuffer);
+		} else {
+			return framebuffer;
+		}
 	}
 
 	public void initScreenshotFramebuffer() {
@@ -195,8 +252,6 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 	
 	public void setScaleFactor(double scaleFactor) {
-//		if (scaleFactor == Config.getScaleFactor()) return;
-		
 		Config.getInstance().scaleFactor = scaleFactor;
 		
 		updateFramebufferSize();
@@ -251,7 +306,9 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 	
 	public double getCurrentScaleFactor() {
-		return shouldScale ? Config.getInstance().scaleFactor : 1;
+		return shouldScale ?
+				Config.getInstance().enableDynamicResolution ?
+						DynamicResolutionHandler.INSTANCE.getCurrentScale() : Config.getInstance().scaleFactor : 1;
 	}
 
 	public boolean getOverrideScreenshotScale() {
@@ -304,27 +361,41 @@ public class ResolutionControlMod implements ModInitializer {
 			}
 		}
 	}
-	
+
+	public void setEnableDynamicResolution(boolean enableDynamicResolution) {
+		Config.getInstance().enableDynamicResolution = enableDynamicResolution;
+
+		if (enableDynamicResolution) {
+
+		}
+	}
+
+	public boolean getEnableFastDynamicResolution() {
+		return Config.getInstance().enableDynamicResolution && Config.getInstance().fastDynamicResolution;
+	}
+
 	public void onResolutionChanged() {
+		if (getWindow() != null && getEnableFastDynamicResolution()) {
+			DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
+					getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
+		}
+
 		updateFramebufferSize();
 	}
 	
-	private void updateFramebufferSize() {
+	public void updateFramebufferSize() {
 		if (framebuffer == null) return;
 
 		resize(framebuffer);
-		
 		resizeMinecraftFramebuffers();
+
 		calculateSize();
 	}
 
 	public void resizeMinecraftFramebuffers() {
-		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
-		resize(client.worldRenderer.getTranslucentFramebuffer());
-		resize(client.worldRenderer.getEntityFramebuffer());
-		resize(client.worldRenderer.getParticlesFramebuffer());
-		resize(client.worldRenderer.getWeatherFramebuffer());
-		resize(client.worldRenderer.getCloudsFramebuffer());
+		initMinecraftFramebuffers();
+
+		minecraftFramebuffers.forEach(this::resize);
 	}
 
 	public void calculateSize() {
@@ -354,8 +425,6 @@ public class ResolutionControlMod implements ModInitializer {
 			);
 		}
 		shouldScale = prev;
-
-
 	}
 	
 	private Window getWindow() {
@@ -400,5 +469,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public interface MutableMinecraftClient {
 		void setFramebuffer(Framebuffer framebuffer);
+
+		int getFps();
 	}
 }
