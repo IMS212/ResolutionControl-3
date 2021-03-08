@@ -12,3 +12,5 @@ accessible field net/minecraft/client/render/WorldRenderer particlesFramebuffer 
 accessible field net/minecraft/client/render/WorldRenderer weatherFramebuffer Lnet/minecraft/client/gl/Framebuffer;
 accessible field net/minecraft/client/render/WorldRenderer cloudsFramebuffer Lnet/minecraft/client/gl/Framebuffer;
 
+accessible field net/minecraft/client/util/Window framebufferWidth I
+accessible field net/minecraft/client/util/Window framebufferHeight I

@@ -54,7 +54,6 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
-
 	private Set<Framebuffer> scaledFramebuffers;
 
 	private Set<Framebuffer> minecraftFramebuffers;
@@ -67,6 +66,9 @@ public class ResolutionControlMod implements ModInitializer {
 	private long estimatedMemory;
 
 	private boolean screenshot = false;
+
+	private int lastWidth;
+	private int lastHeight;
 	
 	@Override
 	public void onInitialize() {
@@ -103,7 +105,8 @@ public class ResolutionControlMod implements ModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null) {
+			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null
+					&& getWindow().getX() != -32000) {
 				DynamicResolutionHandler.INSTANCE.tick();
 			}
 		});
@@ -217,6 +220,8 @@ public class ResolutionControlMod implements ModInitializer {
 			minecraftFramebuffers = new HashSet<>();
 		}
 
+//		setFramebufferReference();
+
 		minecraftFramebuffers.add(client.worldRenderer.getEntityOutlinesFramebuffer());
 		minecraftFramebuffers.add(client.worldRenderer.getTranslucentFramebuffer());
 		minecraftFramebuffers.add(client.worldRenderer.getEntityFramebuffer());
@@ -229,6 +234,7 @@ public class ResolutionControlMod implements ModInitializer {
 	public Framebuffer getFramebuffer() {
 		if (getEnableFastDynamicResolution()) {
 			if (DynamicResolutionHandler.INSTANCE.isFramebufferMapEmpty()) {
+//				setFramebufferReference();
 				DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
 						getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
 			}
@@ -268,7 +274,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 		Config.getInstance().upscaleAlgorithm = algorithm;
 
-		updateFramebufferSize();
+		onResolutionChanged();
 
 		ConfigHandler.instance.saveConfig();
 	}
@@ -291,7 +297,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 		Config.getInstance().downscaleAlgorithm = algorithm;
 
-		updateFramebufferSize();
+		onResolutionChanged();
 
 		ConfigHandler.instance.saveConfig();
 	}
@@ -375,9 +381,10 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public void onResolutionChanged() {
-		if (getWindow() != null && getEnableFastDynamicResolution()) {
+		if (client.world != null && getEnableFastDynamicResolution()) {
+
 			DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
-					getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
+					getWindow().framebufferWidth, getWindow().framebufferHeight, scaledFramebuffers);
 		}
 
 		updateFramebufferSize();
@@ -396,24 +403,6 @@ public class ResolutionControlMod implements ModInitializer {
 		initMinecraftFramebuffers();
 
 		if (getEnableFastDynamicResolution()) {
-			client.worldRenderer.entityOutlinesFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.entityOutlinesFramebuffer);
-			client.worldRenderer.translucentFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.translucentFramebuffer);
-			client.worldRenderer.entityFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.entityFramebuffer);
-			client.worldRenderer.particlesFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.particlesFramebuffer);
-			client.worldRenderer.weatherFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.weatherFramebuffer);
-			client.worldRenderer.cloudsFramebuffer
-					= DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(
-							client.worldRenderer.cloudsFramebuffer);
 		} else {
 			minecraftFramebuffers.forEach(this::resize);
 		}
@@ -441,11 +430,15 @@ public class ResolutionControlMod implements ModInitializer {
 			);
 		} else {
 			if (getEnableFastDynamicResolution()) {
-				framebuffer.resize(
-						getWindow().getWidth(),
-						getWindow().getHeight(),
-						MinecraftClient.IS_SYSTEM_MAC
-				);
+				if (lastWidth != getWindow().framebufferWidth && lastHeight != getWindow().framebufferHeight) {
+					framebuffer.resize(
+							Math.max(getWindow().framebufferWidth, 1),
+							Math.max(getWindow().framebufferHeight, 1),
+							MinecraftClient.IS_SYSTEM_MAC
+					);
+					lastWidth = getWindow().framebufferWidth;
+					lastHeight = getWindow().framebufferHeight;
+				}
 			} else {
 				framebuffer.resize(
 						getWindow().getFramebufferWidth(),

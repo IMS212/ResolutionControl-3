@@ -23,6 +23,9 @@ public class DynamicResolutionHandler {
     private int timer = 0;
     private int currentScale;
 
+    private int lastWidth;
+    private int lastHeight;
+
     private DynamicResolutionHandler() {
         for (float i = 0.5f; i <= 2.0f; i += 0.125f) {
             scales.add(i);
@@ -37,7 +40,7 @@ public class DynamicResolutionHandler {
     public void tick() {
         timer++;
 
-        if (timer > 10) {
+        if (timer > 20) {
             timer = 0;
             update();
         }
@@ -51,7 +54,7 @@ public class DynamicResolutionHandler {
         if (fps > 80) {
             setCurrentScale(Math.min(currentScale + 1, scales.size() - 1));
         } else if (fps < 60) {
-            setCurrentScale(Math.max(currentScale - 1, 0));
+            setCurrentScale(Math.max(currentScale - 2, 0));
         }
     }
 
@@ -80,19 +83,28 @@ public class DynamicResolutionHandler {
     }
 
     public void generateFrameBuffers(int baseWidth, int baseHeight, Collection<Framebuffer> fbs) {
-        frameBufferMap.forEach((framebuffer, list) -> list.forEach(Framebuffer::delete));
-        frameBufferMap.clear();
+        if (lastWidth != baseWidth && lastHeight != baseHeight) {
+            frameBufferMap.forEach((framebuffer, list) -> list.forEach(Framebuffer::delete));
+            frameBufferMap.clear();
 
-        fbs.forEach(framebuffer -> {
-            List<Framebuffer> framebufferList = new ObjectArrayList<>(scales.size());
-            for (int i = 0; i < scales.size(); i++) {
-                float scale = scales.getFloat(i);
-                framebufferList.add(new Framebuffer(
-                        (int) Math.max(baseWidth * scale, 1), (int) Math.max(baseHeight * scale, 1),
-                        true, true));
-            }
-            frameBufferMap.put(framebuffer, framebufferList);
-        });
+            fbs.forEach(framebuffer -> {
+                System.out.println(framebuffer.textureWidth + " " + framebuffer.textureHeight);
+
+                List<Framebuffer> framebufferList = new ObjectArrayList<>(scales.size());
+                for (int i = 0; i < scales.size(); i++) {
+                    float scale = scales.getFloat(i);
+
+                    Framebuffer newFb = new Framebuffer(
+                            (int) Math.max(baseWidth * scale, 1), (int) Math.max(baseHeight * scale, 1),
+                            true, false);
+                    framebufferList.add(newFb);
+                }
+                frameBufferMap.put(framebuffer, framebufferList);
+            });
+
+            lastWidth = baseWidth;
+            lastHeight = baseHeight;
+        }
     }
 
     public boolean isFramebufferMapEmpty() {
