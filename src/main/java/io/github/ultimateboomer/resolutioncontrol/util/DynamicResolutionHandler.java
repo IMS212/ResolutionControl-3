@@ -8,10 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.text.LiteralText;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicResolutionHandler {
     public static final DynamicResolutionHandler INSTANCE = new DynamicResolutionHandler();
@@ -40,7 +37,7 @@ public class DynamicResolutionHandler {
     public void tick() {
         timer++;
 
-        if (timer > 20) {
+        if (timer > 5) {
             timer = 0;
             update();
         }
@@ -49,7 +46,12 @@ public class DynamicResolutionHandler {
     private void update() {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        int fps = MinecraftClient.currentFps;
+        final int smoothAmount = 10;
+        long accumulatedFrameTime =
+                Arrays.stream(client.metricsData.getSamples()).limit(smoothAmount).sum();
+
+        double fps = 1_000_000_000.0 / accumulatedFrameTime * smoothAmount;
+        System.out.println(fps);
 
         if (fps > 80) {
             setCurrentScale(Math.min(currentScale + 1, scales.size() - 1));

@@ -105,6 +105,11 @@ public class ResolutionControlMod implements ModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+//			long frametime = client.metricsData.getSamples()[0];
+//			if (frametime > 0) {
+//				System.out.println(1_000_000_000 / frametime);
+//			}
+
 			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null
 					&& getWindow().getX() != -32000) {
 				DynamicResolutionHandler.INSTANCE.tick();
