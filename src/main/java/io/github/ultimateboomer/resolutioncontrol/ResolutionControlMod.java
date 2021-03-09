@@ -6,6 +6,7 @@ import io.github.ultimateboomer.resolutioncontrol.util.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -113,6 +114,12 @@ public class ResolutionControlMod implements ModInitializer {
 			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null
 					&& getWindow().getX() != -32000) {
 				DynamicResolutionHandler.INSTANCE.tick();
+			}
+		});
+
+		ServerWorldEvents.LOAD.register((server, world) -> {
+			if (ConfigHandler.instance.getConfig().enableDynamicResolution) {
+				DynamicResolutionHandler.INSTANCE.reset();
 			}
 		});
 
@@ -258,11 +265,11 @@ public class ResolutionControlMod implements ModInitializer {
 				true, MinecraftClient.IS_SYSTEM_MAC);
 	}
 	
-	public double getScaleFactor() {
+	public float getScaleFactor() {
 		return Config.getInstance().scaleFactor;
 	}
 	
-	public void setScaleFactor(double scaleFactor) {
+	public void setScaleFactor(float scaleFactor) {
 		Config.getInstance().scaleFactor = scaleFactor;
 		
 		updateFramebufferSize();

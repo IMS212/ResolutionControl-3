@@ -19,8 +19,8 @@ import org.lwjgl.glfw.GLFW;
 public final class MainSettingsScreen extends SettingsScreen {
 	private static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
 
-	private static final double[] scaleValues = {0.0, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0,
-			1.25, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0};
+	private static final float[] scaleValues = {0.0f, 0.01f, 0.025f, 0.05f, 0.1f, 0.25f, 0.5f, 0.75f, 1.0f,
+			1.25f, 1.5f, 2.0f, 3.0f, 4.0f, 6.0f, 8.0f};
 
 	private static final double redValue = 2.0;
 
@@ -88,7 +88,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 					if (manualEntry) {
 						setManualEntry(false, true);
 					} else {
-						mod.setScaleFactor(1.0);
+						mod.setScaleFactor(1.0f);
 						updateButtons();
 					}
 				}
@@ -194,7 +194,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 	}
 	
 	private void changeScaleFactor(boolean add) {
-		double currentScale = mod.getScaleFactor();
+		float currentScale = mod.getScaleFactor();
 		int nextIndex = ArrayUtils.indexOf(scaleValues, currentScale);
 		if (nextIndex == -1) {
 			for (int i = -1; i < scaleValues.length; ++i) {
@@ -236,7 +236,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 			if (!cancel) {
 				String text = entryTextField.getText();
 				if (NumberUtils.isParsable(text)) {
-					double value = Math.abs(Double.parseDouble(text));
+					float value = Math.abs(Float.parseFloat(text));
 					mod.setScaleFactor(value);
 				}
 			}

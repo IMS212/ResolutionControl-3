@@ -17,14 +17,27 @@ public class DynamicResolutionHandler {
     private final FloatList scales = new FloatArrayList();
     private int baseScale;
 
-    private int timer = 0;
+    private int timer = 10;
     private int currentScale;
 
     private int lastWidth;
     private int lastHeight;
 
     private DynamicResolutionHandler() {
-        for (float i = 0.5f; i <= 2.0f; i += 0.125f) {
+        reset();
+    }
+
+    public void tick() {
+        timer--;
+
+        if (timer <= 0) {
+            update();
+        }
+    }
+
+    public void reset() {
+        for (float i = Config.getInstance().drMinScale; i <= Config.getInstance().drMaxScale;
+             i += Config.getInstance().drResStep) {
             scales.add(i);
 
             if (i == 1.0f) {
@@ -34,29 +47,26 @@ public class DynamicResolutionHandler {
         }
     }
 
-    public void tick() {
-        timer++;
-
-        if (timer > 5) {
-            timer = 0;
-            update();
-        }
-    }
-
     private void update() {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        final int smoothAmount = 10;
-        long accumulatedFrameTime =
-                Arrays.stream(client.metricsData.getSamples()).limit(smoothAmount).sum();
+        final int smoothAmount = Config.getInstance().drFpsSmoothAmount;
+        float sum = 0;
+        for (int i = client.metricsData.getCurrentIndex() - smoothAmount;
+             i < client.metricsData.getCurrentIndex(); i++) {
 
-        double fps = 1_000_000_000.0 / accumulatedFrameTime * smoothAmount;
-        System.out.println(fps);
+            sum += client.metricsData.getSamples()[Math.floorMod(i, 240)];
+        }
+        float fps = 1_000_000_000.0f / (sum / smoothAmount);
 
-        if (fps > 80) {
+        if (fps > Config.getInstance().drMaxFps) {
             setCurrentScale(Math.min(currentScale + 1, scales.size() - 1));
-        } else if (fps < 60) {
-            setCurrentScale(Math.max(currentScale - 2, 0));
+            timer = 15;
+        } else if (fps < Config.getInstance().drMinFps) {
+            setCurrentScale(Math.max(currentScale - 1, 0));
+            timer = 5;
+        } else {
+            timer = 3;
         }
     }
 
