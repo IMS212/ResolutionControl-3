@@ -2,14 +2,12 @@
   "required": true,
   "package": "io.github.ultimateboomer.resolutioncontrol.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-
-  ],
   "client": [
     "GameRendererMixin",
     "MinecraftClientMixin",
     "WindowMixin",
-    "FramebufferMixin"
+    "FramebufferMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

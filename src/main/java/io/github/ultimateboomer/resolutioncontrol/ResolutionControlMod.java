@@ -55,7 +55,6 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Nullable
 	private Framebuffer clientFramebuffer;
-	private Set<Framebuffer> scaledFramebuffers;
 
 	private Set<Framebuffer> minecraftFramebuffers;
 
@@ -197,27 +196,12 @@ public class ResolutionControlMod implements ModInitializer {
 		client.getProfiler().swap("level");
 	}
 
-	private void initScaledFramebuffers() {
-		if (scaledFramebuffers != null) {
-			scaledFramebuffers.clear();
-		} else {
-			scaledFramebuffers = new HashSet<>();
-		}
-
-		scaledFramebuffers.add(framebuffer);
-		initMinecraftFramebuffers();
-		scaledFramebuffers.addAll(minecraftFramebuffers);
-		scaledFramebuffers.remove(null);
-	}
-
-	private void initMinecraftFramebuffers() {
+	public void initMinecraftFramebuffers() {
 		if (minecraftFramebuffers != null) {
 			minecraftFramebuffers.clear();
 		} else {
 			minecraftFramebuffers = new HashSet<>();
 		}
-
-//		setFramebufferReference();
 
 		minecraftFramebuffers.add(client.worldRenderer.getEntityOutlinesFramebuffer());
 		minecraftFramebuffers.add(client.worldRenderer.getTranslucentFramebuffer());
@@ -357,10 +341,6 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public void setEnableDynamicResolution(boolean enableDynamicResolution) {
 		Config.getInstance().enableDynamicResolution = enableDynamicResolution;
-
-		if (enableDynamicResolution) {
-
-		}
 	}
 
 	public void onResolutionChanged() {
