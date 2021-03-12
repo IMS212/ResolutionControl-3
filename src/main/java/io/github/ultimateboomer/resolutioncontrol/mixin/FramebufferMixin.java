@@ -2,6 +2,7 @@ package io.github.ultimateboomer.resolutioncontrol.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import io.github.ultimateboomer.resolutioncontrol.util.Config;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +29,7 @@ public abstract class FramebufferMixin {
     @Inject(method = "initFbo", at = @At("HEAD"))
     private void onInitFbo(int width, int height, boolean getError, CallbackInfo ci) {
         scaleMultiplier = (float) width / MinecraftClient.getInstance().getWindow().getWidth();
-        isMipmapped = scaleMultiplier > 2.0f;
+        isMipmapped = Config.getInstance().mipmapHighRes && scaleMultiplier > 2.0f;
     }
 
 
