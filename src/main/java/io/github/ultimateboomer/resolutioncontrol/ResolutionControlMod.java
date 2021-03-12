@@ -106,11 +106,6 @@ public class ResolutionControlMod implements ModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-//			long frametime = client.metricsData.getSamples()[0];
-//			if (frametime > 0) {
-//				System.out.println(1_000_000_000 / frametime);
-//			}
-
 			if (ConfigHandler.instance.getConfig().enableDynamicResolution && client.world != null
 					&& getWindow().getX() != -32000) {
 				DynamicResolutionHandler.INSTANCE.tick();
@@ -146,16 +141,6 @@ public class ResolutionControlMod implements ModInitializer {
 					MinecraftClient.IS_SYSTEM_MAC
 			);
 			calculateSize();
-		}
-
-		if (getEnableFastDynamicResolution()) {
-			if (DynamicResolutionHandler.INSTANCE.isFramebufferMapEmpty()) {
-				initScaledFramebuffers();
-
-				DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
-						getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
-			}
-
 		}
 		
 		this.shouldScale = shouldScale;
@@ -244,17 +229,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public Framebuffer getFramebuffer() {
-		if (getEnableFastDynamicResolution()) {
-			if (DynamicResolutionHandler.INSTANCE.isFramebufferMapEmpty()) {
-//				setFramebufferReference();
-				DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
-						getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(), scaledFramebuffers);
-			}
-
-			return DynamicResolutionHandler.INSTANCE.getCurrentFramebuffer(framebuffer);
-		} else {
-			return framebuffer;
-		}
+		return framebuffer;
 	}
 
 	public void initScreenshotFramebuffer() {
@@ -388,17 +363,7 @@ public class ResolutionControlMod implements ModInitializer {
 		}
 	}
 
-	public boolean getEnableFastDynamicResolution() {
-		return Config.getInstance().enableDynamicResolution && Config.getInstance().fastDynamicResolution;
-	}
-
 	public void onResolutionChanged() {
-		if (client.world != null && getEnableFastDynamicResolution()) {
-
-			DynamicResolutionHandler.INSTANCE.generateFrameBuffers(
-					getWindow().framebufferWidth, getWindow().framebufferHeight, scaledFramebuffers);
-		}
-
 		updateFramebufferSize();
 	}
 	
@@ -413,12 +378,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public void resizeMinecraftFramebuffers() {
 		initMinecraftFramebuffers();
-
-		if (getEnableFastDynamicResolution()) {
-		} else {
-			minecraftFramebuffers.forEach(this::resize);
-		}
-
+		minecraftFramebuffers.forEach(this::resize);
 	}
 
 	public void calculateSize() {
@@ -441,23 +401,11 @@ public class ResolutionControlMod implements ModInitializer {
 					MinecraftClient.IS_SYSTEM_MAC
 			);
 		} else {
-			if (getEnableFastDynamicResolution()) {
-				if (lastWidth != getWindow().framebufferWidth && lastHeight != getWindow().framebufferHeight) {
-					framebuffer.resize(
-							Math.max(getWindow().framebufferWidth, 1),
-							Math.max(getWindow().framebufferHeight, 1),
-							MinecraftClient.IS_SYSTEM_MAC
-					);
-					lastWidth = getWindow().framebufferWidth;
-					lastHeight = getWindow().framebufferHeight;
-				}
-			} else {
-				framebuffer.resize(
-						getWindow().getFramebufferWidth(),
-						getWindow().getFramebufferHeight(),
-						MinecraftClient.IS_SYSTEM_MAC
-				);
-			}
+			framebuffer.resize(
+					getWindow().getFramebufferWidth(),
+					getWindow().getFramebufferHeight(),
+					MinecraftClient.IS_SYSTEM_MAC
+			);
 		}
 		shouldScale = prev;
 	}

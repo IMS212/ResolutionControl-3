@@ -14,7 +14,6 @@ public final class Config {
 	public boolean screenshotFramebufferAlwaysAllocated = false;
 
 	public boolean enableDynamicResolution = false;
-	public boolean fastDynamicResolution = false;
 
 	public float drMinScale = 0.5f;
 	public float drMaxScale = 2.0f;
