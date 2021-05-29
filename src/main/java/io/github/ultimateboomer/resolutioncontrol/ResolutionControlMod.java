@@ -352,7 +352,7 @@ public class ResolutionControlMod implements ModInitializer {
 		if (getWindow() == null)
 			return;
 
-		LOGGER.info("Screen size changed to {}x{}",
+		LOGGER.debug("Screen size changed to {}x{}",
 				getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight());
 
 		updateFramebufferSize();
