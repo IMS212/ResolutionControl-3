@@ -352,22 +352,29 @@ public class ResolutionControlMod implements ModInitializer {
 		if (getWindow() == null)
 			return;
 
-		LOGGER.debug("Screen size changed to {}x{}",
-				getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight());
+		LOGGER.debug("Size changed to {}x{} {}x{} {}x{}",
+				getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(),
+				getWindow().getWidth(), getWindow().getHeight(),
+				getWindow().getScaledWidth(), getWindow().getScaledHeight());
 
-		updateFramebufferSize();
+		if (getWindow().getScaledHeight() == lastWidth
+				|| getWindow().getScaledHeight() == lastHeight)
+		{
+			updateFramebufferSize();
+
+			lastWidth = getWindow().getScaledHeight();
+			lastHeight = getWindow().getScaledHeight();
+		}
+
+
 	}
 	
 	public void updateFramebufferSize() {
-		if (framebuffer == null || getWindow().getFramebufferWidth() == lastWidth
-				|| getWindow().getFramebufferHeight() == lastHeight)
+		if (framebuffer == null)
 			return;
 
 		resize(framebuffer);
 		resizeMinecraftFramebuffers();
-
-		lastWidth = getWindow().getFramebufferWidth();
-		lastHeight = getWindow().getFramebufferHeight();
 
 		calculateSize();
 	}
