@@ -25,8 +25,8 @@ public class WorldRendererMixin {
         ResolutionControlMod.getInstance().resizeMinecraftFramebuffers();
     }
 
-    @Inject(at = @At("RETURN"), method = "loadTransparencyShader")
-    private void onLoadTransparencyShader(CallbackInfo ci) {
-        ResolutionControlMod.getInstance().resizeMinecraftFramebuffers();
-    }
+//    @Inject(at = @At("RETURN"), method = "loadTransparencyShader")
+//    private void onLoadTransparencyShader(CallbackInfo ci) {
+//        ResolutionControlMod.getInstance().resizeMinecraftFramebuffers();
+//    }
 }

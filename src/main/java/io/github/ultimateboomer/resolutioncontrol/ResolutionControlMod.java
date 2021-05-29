@@ -16,15 +16,20 @@ import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
+	public static final String MOD_NAME = "ResolutionControl+";
+
+	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	
 	public static Identifier identifier(String path) {
 		return new Identifier(MOD_ID, path);
@@ -56,7 +61,7 @@ public class ResolutionControlMod implements ModInitializer {
 	@Nullable
 	private Framebuffer clientFramebuffer;
 
-	private Set<Framebuffer> minecraftFramebuffers;
+	private List<Framebuffer> minecraftFramebuffers;
 
 	private Class<? extends SettingsScreen> lastSettingsScreen = MainSettingsScreen.class;
 
@@ -165,9 +170,9 @@ public class ResolutionControlMod implements ModInitializer {
 
 				screenshotFrameBuffer.beginWrite(true);
 			} else {
-				setClientFramebuffer(getFramebuffer());
+				setClientFramebuffer(framebuffer);
 
-				getFramebuffer().beginWrite(true);
+				framebuffer.beginWrite(true);
 			}
 			// nothing on the client's framebuffer yet
 		} else {
@@ -186,7 +191,7 @@ public class ResolutionControlMod implements ModInitializer {
 				screenshot = false;
 				resizeMinecraftFramebuffers();
 			} else {
-				getFramebuffer().draw(
+				framebuffer.draw(
 						window.getFramebufferWidth(),
 						window.getFramebufferHeight()
 				);
@@ -200,7 +205,7 @@ public class ResolutionControlMod implements ModInitializer {
 		if (minecraftFramebuffers != null) {
 			minecraftFramebuffers.clear();
 		} else {
-			minecraftFramebuffers = new HashSet<>();
+			minecraftFramebuffers = new ArrayList<>();
 		}
 
 		minecraftFramebuffers.add(client.worldRenderer.getEntityOutlinesFramebuffer());
@@ -344,14 +349,25 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	public void onResolutionChanged() {
+		if (getWindow() == null)
+			return;
+
+		LOGGER.info("Screen size changed to {}x{}",
+				getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight());
+
 		updateFramebufferSize();
 	}
 	
 	public void updateFramebufferSize() {
-		if (framebuffer == null) return;
+		if (framebuffer == null || getWindow().getFramebufferWidth() == lastWidth
+				|| getWindow().getFramebufferHeight() == lastHeight)
+			return;
 
 		resize(framebuffer);
 		resizeMinecraftFramebuffers();
+
+		lastWidth = getWindow().getFramebufferWidth();
+		lastHeight = getWindow().getFramebufferHeight();
 
 		calculateSize();
 	}

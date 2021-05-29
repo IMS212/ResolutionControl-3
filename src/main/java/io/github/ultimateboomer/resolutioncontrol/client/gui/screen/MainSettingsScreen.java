@@ -180,10 +180,6 @@ public final class MainSettingsScreen extends SettingsScreen {
 				this.focusOn(entryTextField);
 			}
 
-			if (!entryTextField.isFocused()) {
-				entryTextField.setSelected(true);
-			}
-
 			if (!entryTextField.active) {
 				entryTextField.active = true;
 			}
