@@ -21,9 +21,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
@@ -61,7 +61,7 @@ public class ResolutionControlMod implements ModInitializer {
 	@Nullable
 	private Framebuffer clientFramebuffer;
 
-	private List<Framebuffer> minecraftFramebuffers;
+	private Set<Framebuffer> minecraftFramebuffers;
 
 	private Class<? extends SettingsScreen> lastSettingsScreen = MainSettingsScreen.class;
 
@@ -134,6 +134,8 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	public void setShouldScale(boolean shouldScale) {
 		if (shouldScale == this.shouldScale) return;
+
+		if (getScaleFactor() == 1) return;
 		
 		Window window = getWindow();
 		if (framebuffer == null) {
@@ -146,11 +148,11 @@ public class ResolutionControlMod implements ModInitializer {
 			);
 			calculateSize();
 		}
-		
+
 		this.shouldScale = shouldScale;
-		
+
 		client.getProfiler().swap(shouldScale ? "startScaling" : "finishScaling");
-		
+
 		// swap out framebuffers as needed
 		if (shouldScale) {
 			clientFramebuffer = client.getFramebuffer();
@@ -197,7 +199,7 @@ public class ResolutionControlMod implements ModInitializer {
 				);
 			}
 		}
-		
+
 		client.getProfiler().swap("level");
 	}
 
@@ -205,7 +207,7 @@ public class ResolutionControlMod implements ModInitializer {
 		if (minecraftFramebuffers != null) {
 			minecraftFramebuffers.clear();
 		} else {
-			minecraftFramebuffers = new ArrayList<>();
+			minecraftFramebuffers = new HashSet<>();
 		}
 
 		minecraftFramebuffers.add(client.worldRenderer.getEntityOutlinesFramebuffer());
@@ -352,19 +354,19 @@ public class ResolutionControlMod implements ModInitializer {
 		if (getWindow() == null)
 			return;
 
-		LOGGER.debug("Size changed to {}x{} {}x{} {}x{}",
+		LOGGER.info("Size changed to {}x{} {}x{} {}x{}",
 				getWindow().getFramebufferWidth(), getWindow().getFramebufferHeight(),
 				getWindow().getWidth(), getWindow().getHeight(),
 				getWindow().getScaledWidth(), getWindow().getScaledHeight());
 
-		if (getWindow().getScaledHeight() == lastWidth
-				|| getWindow().getScaledHeight() == lastHeight)
-		{
+//		if (getWindow().getScaledHeight() == lastWidth
+//				|| getWindow().getScaledHeight() == lastHeight)
+//		{
 			updateFramebufferSize();
 
 			lastWidth = getWindow().getScaledHeight();
 			lastHeight = getWindow().getScaledHeight();
-		}
+//		}
 
 
 	}
@@ -374,7 +376,8 @@ public class ResolutionControlMod implements ModInitializer {
 			return;
 
 		resize(framebuffer);
-		resizeMinecraftFramebuffers();
+		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
+//		resizeMinecraftFramebuffers();
 
 		calculateSize();
 	}
