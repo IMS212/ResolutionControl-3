@@ -50,7 +50,7 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                     button.setMessage(getStateText(mod.getOverrideScreenshotScale()));
                 }
         );
-        addButton(toggleOverrideSizeButton);
+        this.addDrawableChild(toggleOverrideSizeButton);
 
         toggleAlwaysAllocatedButton = new ButtonWidget(
                 centerX + 20, centerY - 20,
@@ -61,42 +61,42 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
                     button.setMessage(getStateText(mod.isScreenshotFramebufferAlwaysAllocated()));
                 }
         );
-        addButton(toggleAlwaysAllocatedButton);
+        this.addDrawableChild(toggleAlwaysAllocatedButton);
 
         widthTextField = new TextFieldWidget(client.textRenderer,
                 centerX - 85, centerY + 7,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
-        addButton(widthTextField);
+        this.addDrawableChild(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
                 centerX - 35, centerY + 7,
                 textFieldSize, buttonSize,
                 LiteralText.EMPTY);
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
-        addButton(heightTextField);
+        this.addDrawableChild(heightTextField);
 
         increaseButton = new ButtonWidget(
                 centerX - 10 - 60, centerY + 35,
                 20, 20,
                 increaseText,
                 button -> multiply(2.0));
-        addButton(increaseButton);
+        this.addDrawableChild(increaseButton);
 
         decreaseButton = new ButtonWidget(
                 centerX + 10 - 60, centerY + 35,
                 20, 20,
                 decreaseText,
                 button -> multiply(0.5));
-        addButton(decreaseButton);
+        this.addDrawableChild(decreaseButton);
 
         resetButton = new ButtonWidget(
                 centerX + 30 - 60, centerY + 35,
                 20, 20,
                 resetText,
                 button -> resetSize());
-        addButton(resetButton);
+        this.addDrawableChild(resetButton);
 
         calculateSize();
     }

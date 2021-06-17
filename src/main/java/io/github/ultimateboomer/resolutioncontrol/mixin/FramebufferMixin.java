@@ -34,35 +34,35 @@ public abstract class FramebufferMixin {
 
 
     @Redirect(method = "*", at = @At(value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;texParameter(III)V"))
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texParameter(III)V"))
     private void onSetTexFilter(int target, int pname, int param) {
         if (pname == GL11.GL_TEXTURE_MIN_FILTER) {
-            GlStateManager.texParameter(target, pname,
+            GlStateManager._texParameter(target, pname,
                     ResolutionControlMod.getInstance().getUpscaleAlgorithm().getId(isMipmapped));
         } else if (pname == GL11.GL_TEXTURE_MAG_FILTER) {
-            GlStateManager.texParameter(target, pname,
+            GlStateManager._texParameter(target, pname,
                     ResolutionControlMod.getInstance().getDownscaleAlgorithm().getId(false));
         } else if (pname == GL11.GL_TEXTURE_WRAP_S || pname == GL11.GL_TEXTURE_WRAP_T) {
             // Fix linear scaling creating black borders
-            GlStateManager.texParameter(target, pname, GL12.GL_CLAMP_TO_EDGE);
+            GlStateManager._texParameter(target, pname, GL12.GL_CLAMP_TO_EDGE);
         } else {
-            GlStateManager.texParameter(target, pname, param);
+            GlStateManager._texParameter(target, pname, param);
         }
     }
 
     @Redirect(method = "initFbo", at = @At(value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"))
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"))
     private void onTexImage(int target, int level, int internalFormat, int width, int height, int border, int format,
                             int type, IntBuffer pixels) {
         if (isMipmapped) {
             int mipmapLevel = MathHelper.ceil(Math.log(scaleMultiplier) / Math.log(2));
             for (int i = 0; i < mipmapLevel; i++) {
-                GlStateManager.texImage2D(target, i, internalFormat,
+                GlStateManager._texImage2D(target, i, internalFormat,
                        width << i, height << i,
                         border, format, type, pixels);
             }
         } else {
-            GlStateManager.texImage2D(target, 0, internalFormat, width, height, border, format, type, pixels);
+            GlStateManager._texImage2D(target, 0, internalFormat, width, height, border, format, type, pixels);
         }
 
     }
@@ -70,7 +70,7 @@ public abstract class FramebufferMixin {
     @Inject(method = "drawInternal", at = @At("HEAD"))
     private void onDraw(int width, int height, boolean bl, CallbackInfo ci) {
         if (isMipmapped) {
-            GlStateManager.bindTexture(this.getColorAttachment());
+            GlStateManager._bindTexture(this.getColorAttachment());
             GL45.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         }
     }

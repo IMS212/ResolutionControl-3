@@ -1,6 +1,6 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("StaticInitializerReferencesSubClass")
 public class SettingsScreen extends Screen {
-    protected static final Identifier backgroundTexture = ResolutionControlMod.identifier("textures/gui/settings.png");
+    protected static final Identifier WINDOW_TEXTURE = ResolutionControlMod.identifier("textures/gui/settings.png");
 
     protected static Text text(String path, Object... args) {
         return new TranslatableText(ResolutionControlMod.MOD_ID + "." + path, args);
@@ -86,7 +86,7 @@ public class SettingsScreen extends Screen {
             o.add(25);
         });
 
-        menuButtons.values().forEach(this::addButton);
+        menuButtons.values().forEach(this::addDrawableChild);
 
         doneButton = new ButtonWidget(
                 centerX + 15, startY + containerHeight - 30,
@@ -97,7 +97,7 @@ public class SettingsScreen extends Screen {
                     client.openScreen(this.parent);
                 }
         );
-        addButton(doneButton);
+        this.addDrawableChild(doneButton);
     }
 
     @Override
@@ -106,9 +106,9 @@ public class SettingsScreen extends Screen {
             renderBackgroundTexture(0);
         }
 
-        GlStateManager.enableAlphaTest();
-        client.getTextureManager().bindTexture(backgroundTexture);
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.disableDepthTest();
+        RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         int textureWidth = 256;
         int textureHeight = 192;

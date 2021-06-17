@@ -60,7 +60,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 			buttonSize, buttonSize,
 			decreaseText,
 			button -> changeScaleFactor(false));
-		addButton(decreaseButton);
+		this.addDrawableChild(decreaseButton);
 		
 		increaseButton = new ButtonWidget(
 			centerX - 55 + buttonOffset - buttonSize / 2, buttonY,
@@ -68,7 +68,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 				increaseText,
 			button -> changeScaleFactor(true)
 		);
-		addButton(increaseButton);
+		this.addDrawableChild(increaseButton);
 
 		setButton = new ButtonWidget(
 				centerX - 55 - buttonOffset - buttonSize / 2, buttonY + buttonSize,
@@ -78,7 +78,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 					setManualEntry(!manualEntry, false);
 				}
 		);
-		addButton(setButton);
+		this.addDrawableChild(setButton);
 
 		cancelOrResetButton = new ButtonWidget(
 				centerX - 55 - buttonOffset + buttonSize / 2, buttonY + buttonSize,
@@ -93,13 +93,13 @@ public final class MainSettingsScreen extends SettingsScreen {
 					}
 				}
 		);
-		addButton(cancelOrResetButton);
+		this.addDrawableChild(cancelOrResetButton);
 
 		entryTextField = new TextFieldWidget(client.textRenderer,
 				centerX - 55 - textFieldSize / 2, centerY - 36,
 				textFieldSize, buttonSize, LiteralText.EMPTY);
 		entryTextField.setVisible(false);
-		addButton(entryTextField);
+		this.addDrawableChild(entryTextField);
 
 		upscaleAlgoButton = new ButtonWidget(
 			centerX + 15, centerY - 28,
@@ -110,7 +110,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 				button.setMessage(mod.getUpscaleAlgorithm().getText());
 			}
 		);
-		addButton(upscaleAlgoButton);
+		this.addDrawableChild(upscaleAlgoButton);
 
 		downscaleAlgoButton = new ButtonWidget(
 				centerX + 15, centerY + 8,
@@ -121,7 +121,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 					button.setMessage(mod.getDownscaleAlgorithm().getText());
 				}
 		);
-		addButton(downscaleAlgoButton);
+		this.addDrawableChild(downscaleAlgoButton);
 		
 		updateButtons();
 	}

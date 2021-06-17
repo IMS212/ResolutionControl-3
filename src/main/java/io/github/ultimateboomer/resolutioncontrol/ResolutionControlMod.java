@@ -10,9 +10,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.gl.WindowFramebuffer;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -126,7 +127,7 @@ public class ResolutionControlMod implements ModInitializer {
 	}
 
 	private void saveScreenshot(Framebuffer fb) {
-		ScreenshotUtils.saveScreenshot(client.runDirectory,
+		ScreenshotRecorder.saveScreenshot(client.runDirectory,
 				RCUtil.getScreenshotFilename(client.runDirectory).toString(),
 				fb.textureWidth, fb.textureHeight, fb,
 				text -> client.player.sendMessage(text, false));
@@ -135,16 +136,14 @@ public class ResolutionControlMod implements ModInitializer {
 	public void setShouldScale(boolean shouldScale) {
 		if (shouldScale == this.shouldScale) return;
 
-		if (getScaleFactor() == 1) return;
+//		if (getScaleFactor() == 1) return;
 		
 		Window window = getWindow();
 		if (framebuffer == null) {
 			this.shouldScale = true; // so we get the right dimensions
-			framebuffer = new Framebuffer(
+			framebuffer = new WindowFramebuffer(
 					window.getFramebufferWidth(),
-					window.getFramebufferHeight(),
-					true,
-					MinecraftClient.IS_SYSTEM_MAC
+					window.getFramebufferHeight()
 			);
 			calculateSize();
 		}
@@ -226,9 +225,9 @@ public class ResolutionControlMod implements ModInitializer {
 	public void initScreenshotFramebuffer() {
 		if (Objects.nonNull(screenshotFrameBuffer)) screenshotFrameBuffer.delete();
 
-		screenshotFrameBuffer = new Framebuffer(
-				getScreenshotWidth(), getScreenshotHeight(),
-				true, MinecraftClient.IS_SYSTEM_MAC);
+		screenshotFrameBuffer = new WindowFramebuffer(
+				getScreenshotWidth(), getScreenshotHeight()
+		);
 	}
 	
 	public float getScaleFactor() {

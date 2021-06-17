@@ -6,7 +6,7 @@ public final class Config {
 	public ScalingAlgorithm upscaleAlgorithm = ScalingAlgorithm.NEAREST;
 	public ScalingAlgorithm downscaleAlgorithm = ScalingAlgorithm.LINEAR;
 
-	public boolean mipmapHighRes = true;
+	public boolean mipmapHighRes = false;
 
 	public boolean overrideScreenshotScale = true;
 
