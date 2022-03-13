@@ -94,7 +94,7 @@ public class ResolutionControlMod implements ModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (settingsKey.wasPressed()) {
-				client.openScreen(SettingsScreen.getScreen(lastSettingsScreen));
+				client.setScreen(SettingsScreen.getScreen(lastSettingsScreen));
 			}
 		});
 
@@ -129,7 +129,7 @@ public class ResolutionControlMod implements ModInitializer {
 	private void saveScreenshot(Framebuffer fb) {
 		ScreenshotRecorder.saveScreenshot(client.runDirectory,
 				RCUtil.getScreenshotFilename(client.runDirectory).toString(),
-				fb.textureWidth, fb.textureHeight, fb,
+				fb,
 				text -> client.player.sendMessage(text, false));
 	}
 	

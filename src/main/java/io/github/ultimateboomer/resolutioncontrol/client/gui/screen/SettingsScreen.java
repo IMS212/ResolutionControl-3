@@ -76,7 +76,7 @@ public class SettingsScreen extends Screen {
                     startX - menuButtonWidth - 20, startY + o.getValue(),
                     menuButtonWidth, menuButtonHeight,
                     r.getTitle(),
-                    button -> client.openScreen(constructor.apply(this.parent))
+                    button -> client.setScreen(constructor.apply(this.parent))
             );
 
             if (this.getClass().equals(c))
@@ -94,7 +94,7 @@ public class SettingsScreen extends Screen {
                 new TranslatableText("gui.done"),
                 button -> {
                     applySettingsAndCleanup();
-                    client.openScreen(this.parent);
+                    client.setScreen(this.parent);
                 }
         );
         this.addDrawableChild(doneButton);
@@ -132,7 +132,7 @@ public class SettingsScreen extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if ((ResolutionControlMod.getInstance().getSettingsKey().matchesKey(keyCode, scanCode))) {
             this.applySettingsAndCleanup();
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             this.client.mouse.lockCursor();
             return true;
         } else {
@@ -141,9 +141,9 @@ public class SettingsScreen extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.applySettingsAndCleanup();
-        super.onClose();
+        super.close();
     }
 
     protected void applySettingsAndCleanup() {
