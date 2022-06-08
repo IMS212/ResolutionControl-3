@@ -5,7 +5,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.Nullable;
@@ -14,9 +13,9 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     private static final double[] scaleValues = {0.1, 0.25, 0.5, 1.0,
             2.0, 3.0, 4.0, 6.0, 8.0, 16.0};
 
-    private static final Text increaseText = new LiteralText("x2");
-    private static final Text decreaseText = new LiteralText("/2");
-    private static final Text resetText = new LiteralText("R");
+    private static final Text increaseText = Text.literal("x2");
+    private static final Text decreaseText = Text.literal("/2");
+    private static final Text resetText = Text.literal("R");
 
     private TextFieldWidget widthTextField;
     private TextFieldWidget heightTextField;
@@ -66,14 +65,14 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         widthTextField = new TextFieldWidget(client.textRenderer,
                 centerX - 85, centerY + 7,
                 textFieldSize, buttonSize,
-                LiteralText.EMPTY);
+                Text.empty());
         widthTextField.setText(String.valueOf(mod.getScreenshotWidth()));
         this.addDrawableChild(widthTextField);
 
         heightTextField = new TextFieldWidget(client.textRenderer,
                 centerX - 35, centerY + 7,
                 textFieldSize, buttonSize,
-                LiteralText.EMPTY);
+                Text.empty());
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
         this.addDrawableChild(heightTextField);
 

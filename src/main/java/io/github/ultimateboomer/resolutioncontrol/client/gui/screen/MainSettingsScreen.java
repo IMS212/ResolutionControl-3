@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.ArrayUtils;
@@ -24,11 +23,11 @@ public final class MainSettingsScreen extends SettingsScreen {
 
 	private static final double redValue = 2.0;
 
-	private static final Text increaseText = new LiteralText("+");
-	private static final Text decreaseText = new LiteralText("-");
-	private static final Text setText = new LiteralText("S");
-	private static final Text resetText = new LiteralText("R");
-	private static final Text cancelText = new LiteralText("C");
+	private static final Text increaseText = Text.literal("+");
+	private static final Text decreaseText = Text.literal("-");
+	private static final Text setText = Text.literal("S");
+	private static final Text resetText = Text.literal("R");
+	private static final Text cancelText = Text.literal("C");
 	
 	private ButtonWidget increaseButton;
 	private ButtonWidget decreaseButton;
@@ -97,7 +96,7 @@ public final class MainSettingsScreen extends SettingsScreen {
 
 		entryTextField = new TextFieldWidget(client.textRenderer,
 				centerX - 55 - textFieldSize / 2, centerY - 36,
-				textFieldSize, buttonSize, LiteralText.EMPTY);
+				textFieldSize, buttonSize, Text.empty());
 		entryTextField.setVisible(false);
 		this.addDrawableChild(entryTextField);
 

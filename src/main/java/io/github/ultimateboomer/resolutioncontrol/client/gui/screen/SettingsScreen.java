@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,7 @@ public class SettingsScreen extends Screen {
     protected static final Identifier WINDOW_TEXTURE = ResolutionControlMod.identifier("textures/gui/settings.png");
 
     protected static Text text(String path, Object... args) {
-        return new TranslatableText(ResolutionControlMod.MOD_ID + "." + path, args);
+        return Text.translatable(ResolutionControlMod.MOD_ID + "." + path, args);
     }
 
     protected static final int containerWidth = 192;
@@ -91,7 +90,7 @@ public class SettingsScreen extends Screen {
         doneButton = new ButtonWidget(
                 centerX + 15, startY + containerHeight - 30,
                 60, 20,
-                new TranslatableText("gui.done"),
+                Text.translatable("gui.done"),
                 button -> {
                     applySettingsAndCleanup();
                     client.setScreen(this.parent);
@@ -169,7 +168,7 @@ public class SettingsScreen extends Screen {
     }
 
     protected static Text getStateText(boolean enabled) {
-        return enabled ? new TranslatableText("addServer.resourcePack.enabled")
-                : new TranslatableText("addServer.resourcePack.disabled");
+        return enabled ? Text.translatable("addServer.resourcePack.enabled")
+                : Text.translatable("addServer.resourcePack.disabled");
     }
 }
