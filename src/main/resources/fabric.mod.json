@@ -6,7 +6,7 @@
 	"name": "ResolutionControl+",
 	"description": "Gives you more control over minecraft's render resolution.",
 	"authors": [
-		"juliand665", "UltimateBoomer"
+		"juliand665", "UltimateBoomer", "fantahund"
 	],
 	"contact": {
 		"homepage": "https://ultimateboomer.github.io/",
@@ -31,8 +31,10 @@
 	],
 	"accessWidener": "resolutioncontrol.accesswidener",
 	"depends": {
-		"fabricloader": ">=0.14.6",
-		"fabric": "*"
+		"fabricloader": ">=0.14.11",
+		"fabric": "*",
+		"minecraft": ["1.19.3-rc.3", "1.19.3"],
+		"java": ">=17"
 	},
 	"suggests": {
 		"flamingo": "*"

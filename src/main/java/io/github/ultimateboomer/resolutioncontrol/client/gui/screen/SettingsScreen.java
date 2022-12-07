@@ -71,12 +71,8 @@ public class SettingsScreen extends Screen {
 
         screensSupplierList.forEach((c, constructor) -> {
             SettingsScreen r = constructor.apply(this.parent);
-            ButtonWidget b = new ButtonWidget(
-                    startX - menuButtonWidth - 20, startY + o.getValue(),
-                    menuButtonWidth, menuButtonHeight,
-                    r.getTitle(),
-                    button -> client.setScreen(constructor.apply(this.parent))
-            );
+            ButtonWidget b = new ButtonWidget.Builder(r.getTitle(), button -> client.setScreen(constructor.apply(this.parent))).dimensions(startX - menuButtonWidth - 20, startY + o.getValue(),
+                    menuButtonWidth, menuButtonHeight).build();
 
             if (this.getClass().equals(c))
                 b.active = false;
@@ -87,15 +83,10 @@ public class SettingsScreen extends Screen {
 
         menuButtons.values().forEach(this::addDrawableChild);
 
-        doneButton = new ButtonWidget(
-                centerX + 15, startY + containerHeight - 30,
-                60, 20,
-                Text.translatable("gui.done"),
-                button -> {
-                    applySettingsAndCleanup();
-                    client.setScreen(this.parent);
-                }
-        );
+        doneButton = new ButtonWidget.Builder(Text.translatable("gui.done"), button -> {
+            applySettingsAndCleanup();
+            client.setScreen(this.parent);
+        }).dimensions(centerX + 15, startY + containerHeight - 30, 60, 20).build();
         this.addDrawableChild(doneButton);
     }
 
@@ -148,7 +139,7 @@ public class SettingsScreen extends Screen {
     protected void applySettingsAndCleanup() {
         mod.saveSettings();
         mod.setLastSettingsScreen(this.getClass());
-    };
+    }
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
     protected void drawCenteredString(MatrixStack matrices, String text, float x, float y, int color) {

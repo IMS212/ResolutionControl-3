@@ -40,26 +40,16 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     protected void init() {
         super.init();
 
-        toggleOverrideSizeButton = new ButtonWidget(
-                centerX + 20, centerY - 40,
-                50, 20,
-                getStateText(mod.getOverrideScreenshotScale()),
-                button -> {
-                    mod.setOverrideScreenshotScale(!mod.getOverrideScreenshotScale());
-                    button.setMessage(getStateText(mod.getOverrideScreenshotScale()));
-                }
-        );
+        toggleOverrideSizeButton = new ButtonWidget.Builder(getStateText(mod.getOverrideScreenshotScale()), button -> {
+            mod.setOverrideScreenshotScale(!mod.getOverrideScreenshotScale());
+            button.setMessage(getStateText(mod.getOverrideScreenshotScale()));
+        }).dimensions(centerX + 20, centerY - 40, 50, 20).build();
         this.addDrawableChild(toggleOverrideSizeButton);
 
-        toggleAlwaysAllocatedButton = new ButtonWidget(
-                centerX + 20, centerY - 20,
-                50, 20,
-                getStateText(mod.isScreenshotFramebufferAlwaysAllocated()),
-                button -> {
-                    mod.setScreenshotFramebufferAlwaysAllocated(!mod.isScreenshotFramebufferAlwaysAllocated());
-                    button.setMessage(getStateText(mod.isScreenshotFramebufferAlwaysAllocated()));
-                }
-        );
+        toggleAlwaysAllocatedButton = new ButtonWidget.Builder(getStateText(mod.isScreenshotFramebufferAlwaysAllocated()), button -> {
+            mod.setScreenshotFramebufferAlwaysAllocated(!mod.isScreenshotFramebufferAlwaysAllocated());
+            button.setMessage(getStateText(mod.isScreenshotFramebufferAlwaysAllocated()));
+        }).dimensions(centerX + 20, centerY - 20, 50, 20).build();
         this.addDrawableChild(toggleAlwaysAllocatedButton);
 
         widthTextField = new TextFieldWidget(client.textRenderer,
@@ -76,25 +66,13 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
         heightTextField.setText(String.valueOf(mod.getScreenshotHeight()));
         this.addDrawableChild(heightTextField);
 
-        increaseButton = new ButtonWidget(
-                centerX - 10 - 60, centerY + 35,
-                20, 20,
-                increaseText,
-                button -> multiply(2.0));
+        increaseButton = new ButtonWidget.Builder(increaseText, button -> multiply(2.0)).dimensions(centerX - 10 - 60, centerY + 35, 20, 20).build();
         this.addDrawableChild(increaseButton);
 
-        decreaseButton = new ButtonWidget(
-                centerX + 10 - 60, centerY + 35,
-                20, 20,
-                decreaseText,
-                button -> multiply(0.5));
+        decreaseButton = new ButtonWidget.Builder(decreaseText, button -> multiply(0.5)).dimensions(centerX + 10 - 60, centerY + 35, 20, 20).build();
         this.addDrawableChild(decreaseButton);
 
-        resetButton = new ButtonWidget(
-                centerX + 30 - 60, centerY + 35,
-                20, 20,
-                resetText,
-                button -> resetSize());
+        resetButton = new ButtonWidget.Builder(resetText, button -> resetSize()).dimensions(centerX + 30 - 60, centerY + 35, 20, 20).build();
         this.addDrawableChild(resetButton);
 
         calculateSize();
