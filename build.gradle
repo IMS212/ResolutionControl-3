@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "2.4.3"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -87,4 +88,23 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = project.modrinth_id
+	versionNumber = project.mod_version
+	versionName = "${project.getName()} ${project.minecraft_version}-${project.mod_version}"
+	versionType = isMCVersionNonRelease() ? "beta" : "release"
+	changelog = file("changelog.md").text
+	uploadFile = remapJar
+	gameVersions = [ project.minecraft_version ]
+	loaders = [ "fabric" ]
+	dependencies {
+		required.project 'fabric-api'
+	}
+}
+
+boolean isMCVersionNonRelease() {
+	return project.minecraft_version.matches('^\\d\\dw\\d\\d[a-z]$') || project.minecraft_version.matches('\\d+\\.\\d+-(pre|rc)(\\d+)')
 }

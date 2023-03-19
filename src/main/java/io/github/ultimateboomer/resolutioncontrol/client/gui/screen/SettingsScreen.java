@@ -93,7 +93,7 @@ public class SettingsScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (client.world == null) {
-            renderBackgroundTexture(0);
+            renderBackgroundTexture(matrices);
         }
 
         RenderSystem.disableDepthTest();
