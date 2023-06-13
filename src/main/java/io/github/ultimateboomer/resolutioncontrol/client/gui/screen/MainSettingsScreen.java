@@ -2,6 +2,7 @@ package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
 import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -112,29 +113,29 @@ public final class MainSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float time) {
-        super.render(matrices, mouseX, mouseY, time);
+    public void render(DrawContext context, int mouseX, int mouseY, float time) {
+        super.render(context, mouseX, mouseY, time);
 
         if (!this.manualEntry) {
-            drawCenteredString(matrices, String.format("\u00a7%s%s\u00a7rx",
+            drawCenteredString(context, String.format("\u00a7%s%s\u00a7rx",
                             mod.getScaleFactor() > redValue ? "4" : "0", mod.getScaleFactor()),
                     centerX - 55, centerY - 36, 0x000000);
 
-            drawCenteredString(matrices, String.format("\u00a78%sx%s\u00a7r",
+            drawCenteredString(context, String.format("\u00a78%sx%s\u00a7r",
                             ResolutionControlMod.getInstance().getCurrentWidth(),
                             ResolutionControlMod.getInstance().getCurrentHeight()),
                     centerX - 55, centerY - 24, 0x000000);
 
-            drawCenteredString(matrices, "\u00a78" + text("settings.main.estimate",
+            drawCenteredString(context, "\u00a78" + text("settings.main.estimate",
                             RCUtil.formatMetric(ResolutionControlMod.getInstance().getEstimatedMemory()) + "B")
                             .getString() + "\u00a7r",
                     centerX - 55, centerY - 12, 0x000000);
         }
 
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78" + text("settings.main.upscale").getString(),
                 centerX + 15, centerY - 40, 0x000000);
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78" + text("settings.main.downscale").getString(),
                 centerX + 15, centerY - 5, 0x000000);
 

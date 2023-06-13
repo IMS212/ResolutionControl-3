@@ -1,6 +1,7 @@
 package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import io.github.ultimateboomer.resolutioncontrol.util.RCUtil;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -79,25 +80,25 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78" + text("settings.screenshot.overrideSize").getString(),
                 centerX - 75, centerY - 35,
                 0x000000);
 
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78" + text("settings.screenshot.alwaysAllocated").getString(),
                 centerX - 75, centerY - 15,
                 0x000000);
 
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78x",
-                centerX - 42.5f, centerY + 12,
+                centerX - 42, centerY + 12,
                 0x000000);
 
-        drawLeftAlignedString(matrices,
+        drawLeftAlignedString(context,
                 "\u00a78" + text("settings.main.estimate").getString()
                         + " " + RCUtil.formatMetric(estimatedSize) + "B",
                 centerX + 25, centerY + 12,

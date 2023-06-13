@@ -2,6 +2,7 @@ package io.github.ultimateboomer.resolutioncontrol.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.ultimateboomer.resolutioncontrol.ResolutionControlMod;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -91,9 +92,9 @@ public class SettingsScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (client.world == null) {
-            renderBackgroundTexture(matrices);
+            renderBackgroundTexture(context);
         }
 
         RenderSystem.disableDepthTest();
@@ -102,19 +103,19 @@ public class SettingsScreen extends Screen {
 
         int textureWidth = 256;
         int textureHeight = 192;
-        drawTexture(
-                matrices,
+        context.drawTexture(
+                WINDOW_TEXTURE,
                 centerX - textureWidth / 2, centerY - textureHeight / 2,
                 0, 0,
                 textureWidth, textureHeight
         );
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
-        drawLeftAlignedString(matrices, "\u00a7r" + getTitle().getString(),
+        drawLeftAlignedString(context, "\u00a7r" + getTitle().getString(),
                 centerX + 15, startY + 10, 0x000000);
 
-        drawRightAlignedString(matrices, text("settings.title").getString(),
+        drawRightAlignedString(context, text("settings.title").getString(),
                 centerX + 5, startY + 10, 0x404040);
     }
 
@@ -142,16 +143,16 @@ public class SettingsScreen extends Screen {
     }
 
     @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-    protected void drawCenteredString(MatrixStack matrices, String text, float x, float y, int color) {
-        textRenderer.draw(matrices, text, x - textRenderer.getWidth(text) / 2, y, color);
+    protected void drawCenteredString(DrawContext context, String text, int x, int y, int color) {
+        context.drawText(textRenderer, text, x - textRenderer.getWidth(text) / 2, y, color, false);
     }
 
-    protected void drawLeftAlignedString(MatrixStack matrices, String text, float x, float y, int color) {
-        textRenderer.draw(matrices, text, x, y, color);
+    protected void drawLeftAlignedString(DrawContext context, String text, int x, int y, int color) {
+        context.drawText(textRenderer, text, x, y, color, false);
     }
 
-    protected void drawRightAlignedString(MatrixStack matrices, String text, float x, float y, int color) {
-        textRenderer.draw(matrices, text, x - textRenderer.getWidth(text), y, color);
+    protected void drawRightAlignedString(DrawContext context, String text, int x, int y, int color) {
+        context.drawText(textRenderer, text, x - textRenderer.getWidth(text), y, color, false);
     }
 
     public static SettingsScreen getScreen(Class<? extends SettingsScreen> screenClass) {
