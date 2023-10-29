@@ -153,8 +153,6 @@ public final class MainSettingsScreen extends SettingsScreen {
                 entryTextField.active = true;
             }
         }
-
-        entryTextField.tick();
         super.tick();
     }
 

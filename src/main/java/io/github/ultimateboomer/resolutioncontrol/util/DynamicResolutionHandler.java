@@ -21,7 +21,7 @@ public class DynamicResolutionHandler {
         timer--;
 
         if (timer <= 0) {
-            update();
+            //update();
         }
     }
 
@@ -37,7 +37,7 @@ public class DynamicResolutionHandler {
         }
     }
 
-    private void update() {
+    /*private void update() {
         MinecraftClient client = MinecraftClient.getInstance();
 
         final int smoothAmount = Config.getInstance().drFpsSmoothAmount;
@@ -58,7 +58,7 @@ public class DynamicResolutionHandler {
         } else {
             timer = 3;
         }
-    }
+    }*/
 
     private void setCurrentScale(int currentScale) {
         boolean equal = this.currentScale == currentScale;

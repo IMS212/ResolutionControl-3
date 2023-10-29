@@ -1,1 +1,1 @@
-- Update to 1.20.x
+- Update to 1.20.2

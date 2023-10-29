@@ -113,8 +113,6 @@ public class ScreenshotSettingsScreen extends SettingsScreen {
 
     @Override
     public void tick() {
-        widthTextField.tick();
-        heightTextField.tick();
         super.tick();
     }
 
