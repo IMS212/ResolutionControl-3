@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class ResolutionControlMod implements ModInitializer {
 	public static final String MOD_ID = "resolutioncontrol";
-	public static final String MOD_NAME = "ResolutionControl+";
+	public static final String MOD_NAME = "ResolutionControl3";
 
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	
@@ -43,8 +43,6 @@ public class ResolutionControlMod implements ModInitializer {
 	public static ResolutionControlMod getInstance() {
 		return instance;
 	}
-
-	private static final String SCREENSHOT_PREFIX = "fb";
 
 	private boolean optifineInstalled;
 	
@@ -376,7 +374,6 @@ public class ResolutionControlMod implements ModInitializer {
 
 		resize(framebuffer);
 		resize(client.worldRenderer.getEntityOutlinesFramebuffer());
-//		resizeMinecraftFramebuffers();
 
 		calculateSize();
 	}
@@ -441,10 +438,6 @@ public class ResolutionControlMod implements ModInitializer {
 
 	public boolean isScreenshotting() {
 		return screenshot;
-	}
-
-	public boolean isOptifineInstalled() {
-		return optifineInstalled;
 	}
 
 	public void saveSettings() {

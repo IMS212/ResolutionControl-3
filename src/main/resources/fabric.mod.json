@@ -4,14 +4,14 @@
 	"version": "${version}",
 
 	"name": "ResolutionControl+",
-	"description": "Gives you more control over minecraft's render resolution.",
+	"description": "Change resolution of the game and HUD/GUI independently.",
 	"authors": [
-		"juliand665", "UltimateBoomer", "fantahund"
+		"bgp", "juliand665", "UltimateBoomer", "fantahund"
 	],
 	"contact": {
-		"homepage": "https://ultimateboomer.github.io/",
-		"sources": "https://github.com/UltimateBoomer/Resolution-Control",
-		"issues": "https://github.com/UltimateBoomer/Resolution-Control/issues"
+		"homepage": "https://discord.gg/qJVwSK99G2",
+		"sources": "https://github.com/BGP0/ResolutionControl-3",
+		"issues": "https://github.com/BGP0/ResolutionControl-3/issues"
 	},
 
 	"license": "MIT",
@@ -38,5 +38,10 @@
 	},
 	"suggests": {
 		"flamingo": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"update_checker": false
+		}
 	}
 }
