@@ -33,7 +33,7 @@ public class ResolutionControlMod implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	
 	public static Identifier identifier(String path) {
-		return new Identifier(MOD_ID, path);
+		return Identifier.of(MOD_ID, path);
 	}
 	
 	private static final MinecraftClient client = MinecraftClient.getInstance();

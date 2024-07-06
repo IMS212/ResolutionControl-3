@@ -1,9 +1,9 @@
 # gradle
 
-.gradle/
 build/
 out/
 classes/
+.gradle/
 
 # idea
 
