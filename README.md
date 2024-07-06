@@ -2,31 +2,27 @@
 	<img width=256px src="GitHub/logo.png" />
 </p>
 
-# ResolutionControl+
+# ResolutionControl3
 
-ResolutionControl+ is a fork of [Resolution Control](https://github.com/juliand665/Resolution-Control)
-with additional functionality.
+ResolutionControl3 is a fork of [ResolutionControl++](https://github.com/UltimateBoomer/Resolution-Control) that I updated to the latest versions and will continue updating. This mod is typically used to increase your framerate as much as you want, and is especially useful on high resolution monitors. For example I have a 4k monitor and used this mod to render in 1080p, quadrupling my framerate. This mod does not affect the HUD/GUI so your inventory and menus will still look just as good!
 
 ## Features
 
 ### Resolution Scaling
 
-ResolutionControl+ allows you to change Minecraft's render resolution separately from the HUD elements.
-If you have a good GPU, you can increase the multiplier for anti-aliasing.
-Otherwise, you can lower the multiplier to improve performance or give Minecraft a retro style.
-You can also set a custom multiplier value by pressing the `S` button.
+ResolutionControl3 allows you to change Minecraft's render resolution separately from the HUD elements.
+You can lower the games resolution to improve performance or give Minecraft a retro style. You can also set a custom multiplier value by pressing the `S` button.
 
 Additionally, you can set the upscale/downscale algorithm used to scale the render to the viewport.
 Linear is useful as an anti-aliasing filter,
 and nearest neighbor generally looks better for lower than native resolutions.
-
-![main](GitHub/mainsettings.png)
+![main](https://i.imgur.com/41EAyJn.png)
 
 ---
 
 ### Screenshots
 
-ResolutionControl+ can be used to take larger than native resolution screenshots.
+ResolutionControl3 can be used to take larger than native resolution screenshots.
 To do this, use the `Screenshot Framebuffer` keybind which is unbound by default.
 
 Compared to *Fabrishot*, this implementation does not lock up the game until the screenshot is saved.
@@ -37,10 +33,9 @@ Here is the time it takes to take a 16k screenshot, on an i7 4770 and GTX 1060:
 
 ```
 Fabrishot: 12 seconds (pause)
-ResolutionControl+: <1 second (initial pause) + 13 seconds (background processing)
+ResolutionControl3: <1 second (initial pause) + 13 seconds (background processing)
 ```
-
-[![screenshot](http://img.youtube.com/vi/Dghj0Ldeu0Q/0.jpg)](http://www.youtube.com/watch?v=Dghj0Ldeu0Q)
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Dghj0Ldeu0Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ---
 
@@ -68,16 +63,10 @@ ResolutionControl+: <1 second (initial pause) + 13 seconds (background processin
 - Screenshot size
     - Screenshot size if `use set size` is enabled
     - An estimate VRAM usage is displayed
-    
+
 ---
 
-## Compatibility
+## History
 
-Currently, ResolutionControl+ **does not work with Fabulous Graphics**.
-
-**Sodium** - Compatible
-
-**Canvas Renderer** - Mostly compatible, lower resolutions break HUD item rendering
-
-**Optifine** - Compatible, stacks with its own render scale implementation
+This mod was originally created by [juliand665](https://github.com/juliand665/Resolution-Control) for 1.13-1.16 however eventually he quit updating the mod and [UltimateBoomer](https://github.com/UltimateBoomer/Resolution-Control) took over, updating the mod to 1.20.2. Now I will continue updating this mod for the forseeable future. Maybe someone else will make a RC4 one day..
 
