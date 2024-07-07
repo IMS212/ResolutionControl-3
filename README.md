@@ -1,6 +1,11 @@
 <p align="center">
 	<img width=256px src="GitHub/logo.png" />
 </p>
+<p align="center">
+	<a href="https://modrinth.com/mod/resolutioncontrol3" target="_blank">
+		<img alt="Modrinth Version" src="https://img.shields.io/modrinth/v/wHm7Bneo?style=flat&logo=modrinth">
+	</a>
+</p>
 
 # ResolutionControl3
 
