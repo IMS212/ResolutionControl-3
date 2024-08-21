@@ -31,6 +31,7 @@
 	],
 	"accessWidener": "resolutioncontrol.accesswidener",
 	"depends": {
+		"minecraft" : ["1.21.1"],
 		"fabricloader": ">=0.15.11",
 		"fabric": "*",
 		"java": ">=21",

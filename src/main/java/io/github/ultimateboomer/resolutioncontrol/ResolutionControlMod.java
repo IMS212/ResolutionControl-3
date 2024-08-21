@@ -71,7 +71,6 @@ public class ResolutionControlMod implements ModInitializer {
 	
 	@Override
 	public void onInitialize() {
-		System.out.println("HELLO WORLD");
 		instance = this;
 		
 		settingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
