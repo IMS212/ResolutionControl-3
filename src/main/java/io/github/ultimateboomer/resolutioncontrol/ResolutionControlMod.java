@@ -44,9 +44,7 @@ public class ResolutionControlMod implements ModInitializer {
 		return instance;
 	}
 
-	private boolean optifineInstalled;
-	
-	private KeyBinding settingsKey;
+    private KeyBinding settingsKey;
 	private KeyBinding screenshotKey;
 	
 	private boolean shouldScale = false;
@@ -70,12 +68,10 @@ public class ResolutionControlMod implements ModInitializer {
 	private long estimatedMemory;
 
 	private boolean screenshot = false;
-
-	private int lastWidth;
-	private int lastHeight;
 	
 	@Override
 	public void onInitialize() {
+		System.out.println("HELLO WORLD");
 		instance = this;
 		
 		settingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -120,8 +116,6 @@ public class ResolutionControlMod implements ModInitializer {
 				DynamicResolutionHandler.INSTANCE.reset();
 			}
 		});
-
-		optifineInstalled = FabricLoader.getInstance().isModLoaded("optifabric");
 	}
 
 	private void saveScreenshot(Framebuffer fb) {
@@ -360,9 +354,6 @@ public class ResolutionControlMod implements ModInitializer {
 //				|| getWindow().getScaledHeight() == lastHeight)
 //		{
 			updateFramebufferSize();
-
-			lastWidth = getWindow().getScaledHeight();
-			lastHeight = getWindow().getScaledHeight();
 //		}
 
 
