@@ -137,6 +137,12 @@ public class ResolutionControlMod implements ModInitializer {
 					window.getFramebufferWidth(),
 					window.getFramebufferHeight()
 			);
+			var w = window.getFramebufferWidth();
+			var h = window.getFramebufferHeight();
+			framebuffer = new WindowFramebuffer(w, h);
+
+			// necessary to trigger initFbo() so that scaling algorithm is set correctly
+			framebuffer.resize(w, h, MinecraftClient.IS_SYSTEM_MAC);
 			calculateSize();
 		}
 
