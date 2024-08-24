@@ -19,12 +19,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.IntBuffer;
 
-@Mixin(Framebuffer.class)
+@Mixin(value = Framebuffer.class, priority = 900)
 public abstract class FramebufferMixin {
     @Unique private boolean isMipmapped;
     @Unique private float scaleMultiplier;
 
     @Shadow public abstract int getColorAttachment();
+
+    @Shadow protected abstract void drawInternal(int width, int height, boolean disableBlend);
 
     @Inject(method = "initFbo", at = @At("HEAD"))
     private void onInitFbo(int width, int height, boolean getError, CallbackInfo ci) {
@@ -67,11 +69,16 @@ public abstract class FramebufferMixin {
 
     }
 
-    @Inject(method = "drawInternal", at = @At("HEAD"))
-    private void onDraw(int width, int height, boolean bl, CallbackInfo ci) {
+    @Inject(method = "draw(IIZ)V", at = @At(value = "HEAD"), cancellable = true)
+    private void onDraw(int width, int height, boolean disableBlend, CallbackInfo ci) {
         if (isMipmapped) {
             GlStateManager._bindTexture(this.getColorAttachment());
             GL45.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        }
+
+        if (ResolutionControlMod.getInstance().isBeingScaled()) {
+            this.drawInternal(width, height, disableBlend);
+            ci.cancel();
         }
     }
 }

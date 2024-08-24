@@ -12,7 +12,17 @@ loom {
 
 repositories {
 	maven { url "https://maven.terraformersmc.com/releases/" }
-	maven { url 'https://jitpack.io' }
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 dependencies {
@@ -23,6 +33,8 @@ dependencies {
 
 	// Mod Menu as a separate configuration
 	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+
+	modRuntimeOnly "maven.modrinth:sodium:oZOSEhyy"
 }
 
 processResources {

@@ -291,6 +291,11 @@ public class ResolutionControlMod implements ModInitializer {
 						DynamicResolutionHandler.INSTANCE.getCurrentScale() : Config.getInstance().scaleFactor : 1;
 	}
 
+	public boolean isBeingScaled() {
+		return (Config.getInstance().enableDynamicResolution ?
+				DynamicResolutionHandler.INSTANCE.getCurrentScale() : Config.getInstance().scaleFactor) != 1.0f;
+	}
+
 	public boolean getOverrideScreenshotScale() {
 		return Config.getInstance().overrideScreenshotScale;
 	}
